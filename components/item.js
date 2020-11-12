@@ -20,32 +20,39 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-const Cards = () => (
-  <View style={styles.cardWrapper}>
-    <TouchableOpacity>
-      <Card style={styles.cardContent}>
-        <View style={styles.groub}>
-          <Image source={require('../assets/list.png')} />
-          <Text>LIST</Text>
-        </View>
-      </Card>
-    </TouchableOpacity>
-    <TouchableOpacity>
-      <Card style={styles.cardContent}>
-        <View style={styles.groub}>
-          <Image source={require('../assets/absen.png')} />
-          <Text>TAKE</Text>
-        </View>
-      </Card>
-    </TouchableOpacity>
-    <TouchableOpacity>
-      <Card style={styles.cardContent}>
-        <View style={styles.groub}>
-          <Image source={require('../assets/report.png')} />
-          <Text>REPORT</Text>
-        </View>
-      </Card>
-    </TouchableOpacity>
-  </View>
-);
-export default Cards;
+
+export default function item({props}) {
+  // handleTouch
+  const handleTouch = () => {
+    props.navigation.navigate('List');
+  };
+
+  return (
+    <View style={styles.cardWrapper}>
+      <TouchableOpacity onPress={handleTouch}>
+        <Card style={styles.cardContent}>
+          <View style={styles.groub}>
+            <Image source={require('../assets/list.png')} />
+            <Text>DAFTAR</Text>
+          </View>
+        </Card>
+      </TouchableOpacity>
+      <TouchableOpacity>
+        <Card style={styles.cardContent}>
+          <View style={styles.groub}>
+            <Image source={require('../assets/absen.png')} />
+            <Text>ABSEN</Text>
+          </View>
+        </Card>
+      </TouchableOpacity>
+      <TouchableOpacity>
+        <Card style={styles.cardContent}>
+          <View style={styles.groub}>
+            <Image source={require('../assets/report.png')} />
+            <Text>LAPORAN</Text>
+          </View>
+        </Card>
+      </TouchableOpacity>
+    </View>
+  );
+}
