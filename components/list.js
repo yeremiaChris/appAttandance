@@ -1,11 +1,34 @@
 import React, {useState} from 'react';
-import {Card, Title, Paragraph} from 'react-native-paper';
-import {StyleSheet, View, FlatList} from 'react-native';
+import {
+  Card,
+  Title,
+  Paragraph,
+  Modal,
+  Portal,
+  Button,
+  Provider,
+} from 'react-native-paper';
+import {
+  StyleSheet,
+  View,
+  FlatList,
+  Text,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import {Avatar} from 'react-native-paper';
 import SelectPicker from '../shared/SelectPicker';
-import {FAB} from 'react-native-paper';
 import SearchBar from 'react-native-dynamic-search-bar';
+import ModalForm from './modal';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 const initialSiswa = [
+  {
+    nama: 'apa Chris Saragi',
+    angkatan: 2018,
+    jurusan: 'Sistem Informasi',
+    key: '20',
+  },
   {
     nama: 'Yeremia Chris Saragi',
     angkatan: 2018,
@@ -78,9 +101,50 @@ const initialSiswa = [
     jurusan: 'Manajemen',
     key: '12',
   },
+  {
+    nama: 'kali',
+    angkatan: 2017,
+    jurusan: 'Manajemen',
+    key: '13',
+  },
 ];
 export default function list() {
   const [siswa, setSiswa] = useState(initialSiswa);
+  const [visible, setVisible] = useState(false);
+
+  const showModal = () => setVisible(true);
+  const hideModal = () => setVisible(false);
+  const containerStyle = {backgroundColor: 'white', padding: 20};
+
+  // get key for delete
+  const [key, setKey] = useState('');
+
+  // alert
+  const twoOptionAlertHandler = () => {
+    //function to make two option alert
+    Alert.alert(
+      //title
+      'Peringatan',
+      //body
+      'Yakin anda ingin menghapus ?',
+      [
+        {
+          text: 'Yes',
+          onPress: () =>
+            setSiswa((prev) => {
+              return prev.filter((p) => p.key != key);
+            }),
+        },
+        {
+          text: 'No',
+          onPress: () => console.log('No Pressed'),
+          style: 'cancel',
+        },
+      ],
+      {cancelable: false},
+      //clicking out side of alert will not cancel
+    );
+  };
   return (
     <View style={styles.cardWrapper}>
       <SelectPicker />
@@ -89,31 +153,32 @@ export default function list() {
           data={siswa}
           keyExtractor={(item) => item.key}
           renderItem={({item}) => (
-            <View style={styles.viewForCard}>
-              <Card style={styles.container}>
-                <Card.Content style={styles.card}>
-                  <View>
-                    <Title>{item.nama}</Title>
-                    <Paragraph>
-                      {item.jurusan} {item.angkatan}
-                    </Paragraph>
-                  </View>
-                  <Avatar.Image
-                    size={50}
-                    source={require('../assets/list.png')}
-                  />
-                </Card.Content>
-              </Card>
-            </View>
+            <TouchableOpacity
+              onPress={() => {
+                setKey(item.key);
+                twoOptionAlertHandler();
+              }}>
+              <View style={styles.viewForCard}>
+                <Card style={styles.container}>
+                  <Card.Content style={styles.card}>
+                    <View>
+                      <Title>{item.nama}</Title>
+                      <Paragraph>
+                        {item.jurusan} {item.angkatan}
+                      </Paragraph>
+                    </View>
+                    <Avatar.Image
+                      size={50}
+                      source={require('../assets/list.png')}
+                    />
+                  </Card.Content>
+                </Card>
+              </View>
+            </TouchableOpacity>
           )}
         />
+        <ModalForm setSiswa={setSiswa} />
       </View>
-      <FAB
-        style={styles.fab}
-        medium
-        icon="plus"
-        onPress={() => console.log('Pressed')}
-      />
     </View>
   );
 }
@@ -135,12 +200,6 @@ const styles = StyleSheet.create({
   containerdua: {
     flex: 1,
   },
-  fab: {
-    position: 'absolute',
-    margin: 16,
-    right: 0,
-    bottom: 0,
-  },
   search: {
     backgroundColor: 'white',
   },
@@ -150,5 +209,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0,
     marginBottom: 10,
     elevation: 1,
+  },
+  modal: {
+    height: 300,
+    width: 300,
   },
 });

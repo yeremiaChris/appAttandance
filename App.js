@@ -7,19 +7,12 @@
  */
 import React from 'react';
 
-// drawer
+// navigation
 import {NavigationContainer} from '@react-navigation/native';
-import {createDrawerNavigator} from '@react-navigation/drawer';
 import {Provider as PaperProvider} from 'react-native-paper';
-const Drawer = createDrawerNavigator();
-
-// components
-import Home from './components/home';
-import List from './components/list';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 // stackNavigator
-import HomeStack from './routes/homeStack';
-import homeStack from './routes/homeStack';
-import SearchBar from 'react-native-dynamic-search-bar';
+import DrawerNav from './routes/drawerNav';
 import {StyleSheet} from 'react-native';
 
 const App: () => React$Node = () => {
@@ -33,29 +26,7 @@ const App: () => React$Node = () => {
     <>
       <PaperProvider>
         <NavigationContainer>
-          <Drawer.Navigator initialRouteName="Home">
-            <Drawer.Screen
-              name="Home"
-              component={homeStack}
-              options={{headerShown: false}}
-            />
-            <Drawer.Screen
-              name="List"
-              component={List}
-              options={{
-                headerTitle: () => (
-                  <SearchBar
-                    style={styles.search}
-                    placeholder="Search here"
-                    onChangeText={(text) => {
-                      console.log(text);
-                    }}
-                    onPress={() => alert('onPress')}
-                  />
-                ),
-              }}
-            />
-          </Drawer.Navigator>
+          <DrawerNav />
         </NavigationContainer>
       </PaperProvider>
     </>

@@ -1,27 +1,19 @@
 import React from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
-import Home from '../components/home';
+const Drawer = createDrawerNavigator();
+import {createDrawerNavigator} from '@react-navigation/drawer';
 import List from '../components/list';
-const Stack = createStackNavigator();
-import Header from '../shared/Header';
 import SearchBar from 'react-native-dynamic-search-bar';
 import {StyleSheet} from 'react-native';
-
-export default function homeStack(props) {
+import bottomaBar from './bottomBar';
+export default function drawerNav() {
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Home"
-        component={Home}
-        options={({navigation}) => {
-          return {
-            headerTitle: () => (
-              <Header navigation={navigation} title="Beranda" />
-            ),
-          };
-        }}
+    <Drawer.Navigator initialRouteName="Home">
+      <Drawer.Screen
+        name="Beranda"
+        component={bottomaBar}
+        options={{headerShown: false}}
       />
-      <Stack.Screen
+      <Drawer.Screen
         name="Daftar"
         component={List}
         options={{
@@ -37,7 +29,7 @@ export default function homeStack(props) {
           ),
         }}
       />
-    </Stack.Navigator>
+    </Drawer.Navigator>
   );
 }
 const styles = StyleSheet.create({

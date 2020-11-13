@@ -15,9 +15,11 @@
     "@mdi/font": "^5.8.55",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-native-community/picker": "^1.8.1",
+    "@react-navigation/bottom-tabs": "^5.11.1",
     "@react-navigation/drawer": "^5.11.2",
     "@react-navigation/native": "^5.8.9",
     "@react-navigation/stack": "^5.12.5",
+    "formik": "^2.2.5",
     "mdi-react": "^7.4.0",
     "react": "16.13.1",
     "react-native": "0.63.3",
@@ -30,7 +32,8 @@
     "react-native-safe-area-context": "^3.1.8",
     "react-native-screens": "^2.14.0",
     "react-native-spinkit": "^1.5.1",
-    "react-native-vector-icons": "^7.1.0"
+    "react-native-vector-icons": "^7.1.0",
+    "yup": "^0.29.3"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
