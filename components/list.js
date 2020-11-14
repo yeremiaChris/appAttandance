@@ -3,10 +3,12 @@ import {
   Card,
   Title,
   Paragraph,
-  Modal,
   Portal,
   Button,
-  Provider,
+  Modal,
+  Avatar,
+  IconButton,
+  Colors,
 } from 'react-native-paper';
 import {
   StyleSheet,
@@ -16,14 +18,13 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import {Avatar, IconButton, Colors} from 'react-native-paper';
 import SelectPicker from '../shared/SelectPicker';
 import SearchBar from 'react-native-dynamic-search-bar';
 import ModalForm from './modal';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Checkbox} from 'react-native-paper';
 import {object} from 'yup';
-
+import ModalDetail from '../shared/modalDetail';
 const initialSiswa = [
   {
     nama: 'apa Chris Saragi',
@@ -48,14 +49,24 @@ const initialSiswa = [
     check: false,
   },
 ];
+// initialDetail
+const initialDetail = {
+  nama: '',
+  angkatan: '',
+  jurusan: '',
+  key: '',
+};
 export default function list() {
   const [siswa, setSiswa] = useState(initialSiswa);
+  // modalDetail
   const [visible, setVisible] = useState(false);
 
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
   const containerStyle = {backgroundColor: 'white', padding: 20};
 
+  const [detail, setDetail] = useState(initialDetail);
+  // akhir ModalDetail
   // get key for delete
   const [key, setKey] = useState('');
 
@@ -81,7 +92,6 @@ export default function list() {
   const deleteAll = () => {
     twoOptionAlertHandler();
   };
-  // delete alert
   // alert delete
   const twoOptionAlertHandler = () => {
     //function to make two option alert
@@ -102,7 +112,7 @@ export default function list() {
         },
         {
           text: 'No',
-          onPress: () => console.log('No Pressed'),
+          onPress: () => setDisplay(false),
           style: 'cancel',
         },
       ],
@@ -112,6 +122,14 @@ export default function list() {
   };
   return (
     <View style={styles.cardWrapper}>
+      {/* modal */}
+      <ModalDetail
+        visible={visible}
+        hideModal={hideModal}
+        containerStyle={containerStyle}
+        detail={detail}
+      />
+      {/* akhir modal */}
       <SelectPicker />
       <View style={styles.containerdua}>
         {display ? (
@@ -150,12 +168,24 @@ export default function list() {
                         }}
                       />
                     ) : null}
-                    <View>
-                      <Title>{item.nama}</Title>
-                      <Paragraph>
-                        {item.jurusan} {item.angkatan}
-                      </Paragraph>
-                    </View>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setDetail({
+                          nama: item.nama,
+                          angkatan: item.angkatan,
+                          jurusan: item.jurusan,
+                          key: item.key,
+                        });
+                        showModal();
+                      }}
+                      onLongPress={() => setDisplay(true)}>
+                      <View>
+                        <Title>{item.nama}</Title>
+                        <Paragraph>
+                          {item.jurusan} {item.angkatan}
+                        </Paragraph>
+                      </View>
+                    </TouchableOpacity>
                     <Avatar.Image
                       size={50}
                       source={require('../assets/list.png')}
