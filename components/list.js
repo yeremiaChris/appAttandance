@@ -16,11 +16,13 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import {Avatar} from 'react-native-paper';
+import {Avatar, IconButton, Colors} from 'react-native-paper';
 import SelectPicker from '../shared/SelectPicker';
 import SearchBar from 'react-native-dynamic-search-bar';
 import ModalForm from './modal';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {Checkbox} from 'react-native-paper';
+import {object} from 'yup';
 
 const initialSiswa = [
   {
@@ -28,84 +30,22 @@ const initialSiswa = [
     angkatan: 2018,
     jurusan: 'Sistem Informasi',
     key: '20',
+    check: false,
   },
   {
     nama: 'Yeremia Chris Saragi',
     angkatan: 2018,
     jurusan: 'Sistem Informasi',
-    key: '1',
+    key: '2',
+    check: false,
   },
+
   {
-    nama: 'Kamiswara Angga Wijaya',
+    nama: 'Yeremia Chris Saragi',
     angkatan: 2018,
     jurusan: 'Sistem Informasi',
-    key: '2',
-  },
-  {
-    nama: 'Alex Saputra',
-    angkatan: 2017,
-    jurusan: 'Manajemen',
     key: '3',
-  },
-  {
-    nama: 'Alex Saputra',
-    angkatan: 2017,
-    jurusan: 'Manajemen',
-    key: '4',
-  },
-  {
-    nama: 'Alex Saputra',
-    angkatan: 2017,
-    jurusan: 'Manajemen',
-    key: '5',
-  },
-  {
-    nama: 'Alex Saputra',
-    angkatan: 2017,
-    jurusan: 'Manajemen',
-    key: '6',
-  },
-  {
-    nama: 'Alex Saputra',
-    angkatan: 2017,
-    jurusan: 'Manajemen',
-    key: '7',
-  },
-  {
-    nama: 'Alex Saputra',
-    angkatan: 2017,
-    jurusan: 'Manajemen',
-    key: '8',
-  },
-  {
-    nama: 'Alex Saputra',
-    angkatan: 2017,
-    jurusan: 'Manajemen',
-    key: '9',
-  },
-  {
-    nama: 'Alex Saputra',
-    angkatan: 2017,
-    jurusan: 'Manajemen',
-    key: '10',
-  },
-  {
-    nama: 'keren',
-    angkatan: 2017,
-    jurusan: 'Manajemen',
-    key: '11',
-  },
-  {
-    nama: 'kali',
-    angkatan: 2017,
-    jurusan: 'Manajemen',
-    key: '12',
-  },
-  {
-    nama: 'kali',
-    angkatan: 2017,
-    jurusan: 'Manajemen',
-    key: '13',
+    check: false,
   },
 ];
 export default function list() {
@@ -119,7 +59,30 @@ export default function list() {
   // get key for delete
   const [key, setKey] = useState('');
 
-  // alert
+  // chekcbox
+  const [checked, setChecked] = React.useState(false);
+  // display
+  const [display, setDisplay] = useState(false);
+  // checkall
+  const [all, setAll] = useState(false);
+  const updateAll = () => {
+    setSiswa([
+      ...siswa.map((data) => {
+        setAll(!all);
+        return {
+          ...data,
+          check: !all,
+        };
+      }),
+    ]);
+  };
+
+  // deleteAllFunction
+  const deleteAll = () => {
+    twoOptionAlertHandler();
+  };
+  // delete alert
+  // alert delete
   const twoOptionAlertHandler = () => {
     //function to make two option alert
     Alert.alert(
@@ -130,10 +93,12 @@ export default function list() {
       [
         {
           text: 'Yes',
-          onPress: () =>
+          onPress: () => {
             setSiswa((prev) => {
-              return prev.filter((p) => p.key != key);
+              return prev.filter((p) => p.check != true);
             }),
+              setDisplay(false);
+          },
         },
         {
           text: 'No',
@@ -149,18 +114,42 @@ export default function list() {
     <View style={styles.cardWrapper}>
       <SelectPicker />
       <View style={styles.containerdua}>
+        {display ? (
+          <>
+            <View style={styles.viewDelete}>
+              <Checkbox
+                status={all ? 'checked' : 'unchecked'}
+                onPress={updateAll}
+              />
+              <IconButton
+                icon="delete"
+                color={Colors.grey500}
+                size={20}
+                onPress={deleteAll}
+              />
+            </View>
+          </>
+        ) : null}
         <FlatList
           data={siswa}
           keyExtractor={(item) => item.key}
           renderItem={({item}) => (
             <TouchableOpacity
-              onPress={() => {
-                setKey(item.key);
-                twoOptionAlertHandler();
+              onLongPress={() => {
+                setDisplay(true);
               }}>
               <View style={styles.viewForCard}>
                 <Card style={styles.container}>
                   <Card.Content style={styles.card}>
+                    {display ? (
+                      <Checkbox
+                        status={item.check ? 'checked' : 'unchecked'}
+                        onPress={() => {
+                          item.check = checked;
+                          setChecked(!checked);
+                        }}
+                      />
+                    ) : null}
                     <View>
                       <Title>{item.nama}</Title>
                       <Paragraph>
@@ -177,12 +166,16 @@ export default function list() {
             </TouchableOpacity>
           )}
         />
+
         <ModalForm setSiswa={setSiswa} />
       </View>
     </View>
   );
 }
 const styles = StyleSheet.create({
+  modal: {
+    flexDirection: 'column',
+  },
   cardWrapper: {
     padding: 10,
     flex: 1,
@@ -213,5 +206,12 @@ const styles = StyleSheet.create({
   modal: {
     height: 300,
     width: 300,
+  },
+  check: {
+    display: 'none',
+  },
+  viewDelete: {
+    justifyContent: 'space-between',
+    flexDirection: 'row',
   },
 });
