@@ -120,6 +120,17 @@ export default function list() {
       //clicking out side of alert will not cancel
     );
   };
+
+  // label pada select
+  const label = [
+    {label: 'Angkatan 2019', value: '2019'},
+    {label: 'Angkatan 2018', value: '2018'},
+    {label: 'Angkatan 2017', value: '2017'},
+  ];
+  const [items, setItems] = useState(label);
+  const [nilai, setNilai] = useState({
+    tangkapValue: null,
+  });
   return (
     <View style={styles.cardWrapper}>
       {/* modal */}
@@ -130,7 +141,12 @@ export default function list() {
         detail={detail}
       />
       {/* akhir modal */}
-      <SelectPicker />
+      <SelectPicker
+        title="Pilih Angkatan"
+        items={items}
+        nilai={nilai}
+        setNilai={setNilai}
+      />
       <View style={styles.containerdua}>
         {display ? (
           <>

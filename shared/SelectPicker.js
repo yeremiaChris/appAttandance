@@ -2,23 +2,26 @@ import RNPickerSelect from 'react-native-picker-select';
 import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 
-export default function SelectPicker() {
-  // label pada selectnya
-  const label = [
-    {label: 'Angkatan 2019', value: '2019'},
-    {label: 'Angkatan 2018', value: '2018'},
-    {label: 'Angkatan 2017', value: '2017'},
-  ];
-  const [items, setItems] = useState(label);
-  const [nilai, setNilai] = useState({
-    tangkapValue: null,
-  });
+export default function SelectPicker({
+  title,
+  items,
+  setNilai,
+  nilai,
+  changeTitle,
+}) {
   return (
     <View style={styles.select}>
       <RNPickerSelect
         style={styles}
-        placeholder={{label: 'Pilih Angkatan...', value: null}}
-        onValueChange={(value) => setNilai({tangkapValue: value})}
+        placeholder={{label: `${title}...`, value: null}}
+        onValueChange={(value) => {
+          setNilai({tangkapValue: value});
+          if (value === null) {
+            changeTitle('Doa Pagi');
+          } else {
+            changeTitle(value);
+          }
+        }}
         items={items}
         value={nilai.tangkapValue}
         style={pickerSelectStyles}

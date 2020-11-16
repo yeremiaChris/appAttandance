@@ -21,6 +21,7 @@
     "@react-navigation/stack": "^5.12.5",
     "formik": "^2.2.5",
     "mdi-react": "^7.4.0",
+    "radio-buttons-react-native": "^1.0.4",
     "react": "16.13.1",
     "react-native": "0.63.3",
     "react-native-display": "^1.0.8",

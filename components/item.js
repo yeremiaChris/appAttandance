@@ -26,9 +26,13 @@ const styles = StyleSheet.create({
 });
 
 export default function item({props}) {
-  // handleTouch
+  // handleTouchKeDaftar Siswa
   const handleTouch = () => {
     props.navigation.navigate('Daftar');
+  };
+  // handle ke absen doapagi
+  const handleDoapagi = () => {
+    props.navigation.navigate('Doapagi');
   };
   return (
     <>
@@ -41,7 +45,7 @@ export default function item({props}) {
             </View>
           </Card>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleDoapagi}>
           <Card style={styles.cardContent}>
             <View style={styles.groub}>
               <Image source={require('../assets/absen.png')} />
