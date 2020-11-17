@@ -2,7 +2,7 @@ import React from 'react';
 const Drawer = createDrawerNavigator();
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import List from '../components/list';
-import DoaPagi from '../components/doapagi';
+import Absen from '../components/absen';
 import SearchBar from 'react-native-dynamic-search-bar';
 import {StyleSheet} from 'react-native';
 import bottomaBar from './bottomBar';
@@ -31,8 +31,8 @@ export default function drawerNav() {
         }}
       />
       <Drawer.Screen
-        name="Doapagi"
-        component={DoaPagi}
+        name="Absen"
+        component={Absen}
         options={{
           headerTitle: () => (
             <SearchBar

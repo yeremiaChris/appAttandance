@@ -5,6 +5,7 @@ import absenStack from './absenStack';
 import daftarStack from './daftarStack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import List from '../components/list';
+import laporanStack from './laporanStack';
 const Tab = createBottomTabNavigator();
 export default function bottomBar() {
   return (
@@ -32,6 +33,15 @@ export default function bottomBar() {
         component={absenStack}
         options={{
           tabBarIcon: () => <Ionicons name="ios-open-outline" size={25} />,
+        }}
+      />
+      <Tab.Screen
+        name="Laporan"
+        component={laporanStack}
+        options={{
+          tabBarIcon: () => (
+            <Ionicons name="ios-folder-open-outline" size={25} />
+          ),
         }}
       />
     </Tab.Navigator>

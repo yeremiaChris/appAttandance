@@ -8,6 +8,9 @@ export default function SelectPicker({
   setNilai,
   nilai,
   changeTitle,
+  handlePilih,
+  handlePilihPagi,
+  valueLabel,
 }) {
   return (
     <View style={styles.select}>
@@ -16,10 +19,17 @@ export default function SelectPicker({
         placeholder={{label: `${title}...`, value: null}}
         onValueChange={(value) => {
           setNilai({tangkapValue: value});
-          if (value === null) {
-            changeTitle('Doa Pagi');
-          } else {
-            changeTitle(value);
+          switch (value) {
+            case null:
+
+            case 'Doa Pagi':
+              changeTitle(value);
+              handlePilihPagi();
+              break;
+            case 'Ibadah Minggu':
+              changeTitle(value);
+              handlePilih();
+              break;
           }
         }}
         items={items}

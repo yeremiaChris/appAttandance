@@ -1,8 +1,9 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import Home from '../components/home';
+import Laporan from '../components/laporan';
 import List from '../components/list';
-import DoaPagi from '../components/doapagi';
+import Absen from '../components/absen';
 const Stack = createStackNavigator();
 import Header from '../shared/Header';
 import SearchBar from 'react-native-dynamic-search-bar';
@@ -39,8 +40,24 @@ export default function homeStack(props) {
         }}
       />
       <Stack.Screen
-        name="Doapagi"
-        component={DoaPagi}
+        name="Absen"
+        component={Absen}
+        options={{
+          headerTitle: () => (
+            <SearchBar
+              style={styles.search}
+              placeholder="Cari Siswa..."
+              onChangeText={(text) => {
+                console.log(text);
+              }}
+              onPress={() => alert('onPress')}
+            />
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="Laporan"
+        component={Laporan}
         options={{
           headerTitle: () => (
             <SearchBar

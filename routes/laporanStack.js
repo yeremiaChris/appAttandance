@@ -1,6 +1,6 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
-import Absen from '../components/absen';
+import Laporan from '../components/laporan';
 const Stack = createStackNavigator();
 import Header from '../shared/Header';
 import SearchBar from 'react-native-dynamic-search-bar';
@@ -10,8 +10,8 @@ export default function homeStack(props) {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="Absen"
-        component={Absen}
+        name="Laporan"
+        component={Laporan}
         options={{
           headerTitle: () => (
             <SearchBar

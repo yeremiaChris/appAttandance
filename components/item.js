@@ -32,7 +32,11 @@ export default function item({props}) {
   };
   // handle ke absen doapagi
   const handleDoapagi = () => {
-    props.navigation.navigate('Doapagi');
+    props.navigation.navigate('Absen');
+  };
+  // handle ke laporan
+  const handleLaporan = () => {
+    props.navigation.navigate('Laporan');
   };
   return (
     <>
@@ -53,7 +57,7 @@ export default function item({props}) {
             </View>
           </Card>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleLaporan}>
           <Card style={styles.cardContent}>
             <View style={styles.groub}>
               <Image source={require('../assets/report.png')} />

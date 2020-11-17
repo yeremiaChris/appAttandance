@@ -1,8 +1,21 @@
 import React, {useState} from 'react';
-import {StyleSheet, View, TouchableOpacity, Text, FlatList} from 'react-native';
-import {Card, Title, Paragraph, Avatar, FAB} from 'react-native-paper';
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Text,
+  FlatList,
+  Alert,
+} from 'react-native';
+import {
+  Card,
+  Title,
+  Paragraph,
+  Avatar,
+  FAB,
+  RadioButton,
+} from 'react-native-paper';
 import {CheckBox} from 'react-native-elements';
-import {RadioButton} from 'react-native-paper';
 import SelectPickker from '../shared/SelectPicker';
 import RadioButtonRN from 'radio-buttons-react-native';
 
@@ -45,14 +58,15 @@ const data = [
     label: 'Tidak Hadir',
   },
 ];
-export default function doapagi() {
+// label select
+const label = [
+  {label: 'Doa Pagi', value: 'Doa Pagi'},
+  {label: 'Ibadah Minggu', value: 'Ibadah Minggu'},
+];
+export default function Absen() {
   // state doapagi
   const [doaPagi, setDoaPagi] = useState(initialDoaPagi);
-  // label select
-  const label = [
-    {label: 'Doa Pagi', value: 'Doa Pagi'},
-    {label: 'Ibadah Minggu', value: 'Ibadah Minggu'},
-  ];
+  // state select
   const [items, setItems] = useState(label);
   const [nilai, setNilai] = useState({
     tangkapValue: null,
@@ -62,6 +76,33 @@ export default function doapagi() {
   const changeTitle = (newTitle) => {
     setTitle(newTitle);
   };
+  const handlePilih = () => console.log('test');
+  // alert berhasil take attandance
+  const twoOptionAlertHandler = () => {
+    //function to make two option alert
+    Alert.alert(
+      //title
+      'Berhasil mengambil absen',
+      //body
+      'Lihat laporan ?',
+      [
+        {
+          text: 'Yes',
+          onPress: () => {
+            console.log('masuk ke laporan');
+          },
+        },
+        {
+          text: 'No',
+          onPress: () => console.log('test'),
+          style: 'cancel',
+        },
+      ],
+      {cancelable: false},
+      //clicking out side of alert will not cancel
+    );
+  };
+
   return (
     <View style={styles.viewForCard}>
       <SelectPickker
@@ -70,6 +111,9 @@ export default function doapagi() {
         nilai={nilai}
         setNilai={setNilai}
         changeTitle={changeTitle}
+        handlePilih={handlePilih}
+        valueLabel="Doa Pagi"
+        handlePilihPagi={handlePilih}
       />
       <View>
         <Card style={styles.container}>
@@ -120,7 +164,7 @@ export default function doapagi() {
           </View>
         )}
       />
-      <FAB style={styles.fab} small icon="send" />
+      <FAB style={styles.fab} medium icon="send" />
     </View>
   );
 }

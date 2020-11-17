@@ -56,6 +56,12 @@ const initialDetail = {
   jurusan: '',
   key: '',
 };
+// label pada select
+const label = [
+  {label: 'Angkatan 2019', value: '2019'},
+  {label: 'Angkatan 2018', value: '2018'},
+  {label: 'Angkatan 2017', value: '2017'},
+];
 export default function list() {
   const [siswa, setSiswa] = useState(initialSiswa);
   // modalDetail
@@ -120,13 +126,7 @@ export default function list() {
       //clicking out side of alert will not cancel
     );
   };
-
-  // label pada select
-  const label = [
-    {label: 'Angkatan 2019', value: '2019'},
-    {label: 'Angkatan 2018', value: '2018'},
-    {label: 'Angkatan 2017', value: '2017'},
-  ];
+  // state
   const [items, setItems] = useState(label);
   const [nilai, setNilai] = useState({
     tangkapValue: null,
@@ -175,6 +175,7 @@ export default function list() {
               <View style={styles.viewForCard}>
                 <Card style={styles.container}>
                   <Card.Content style={styles.card}>
+                    {/* kalo di tahan lama maka checkbox ini akan muncul */}
                     {display ? (
                       <Checkbox
                         status={item.check ? 'checked' : 'unchecked'}
