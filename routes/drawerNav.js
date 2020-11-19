@@ -3,6 +3,7 @@ const Drawer = createDrawerNavigator();
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import List from '../components/list';
 import Absen from '../components/absen';
+import Laporan from '../components/laporan';
 import SearchBar from 'react-native-dynamic-search-bar';
 import {StyleSheet} from 'react-native';
 import bottomaBar from './bottomBar';
@@ -33,6 +34,22 @@ export default function drawerNav() {
       <Drawer.Screen
         name="Absen"
         component={Absen}
+        options={{
+          headerTitle: () => (
+            <SearchBar
+              style={styles.search}
+              placeholder="Cari Siswa..."
+              onChangeText={(text) => {
+                console.log(text);
+              }}
+              onPress={() => alert('onPress')}
+            />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Laporan"
+        component={Laporan}
         options={{
           headerTitle: () => (
             <SearchBar
