@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "381617015582",
+    "firebase_url": "https://absen-aa571.firebaseio.com",
+    "project_id": "absen-aa571",
+    "storage_bucket": "absen-aa571.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:381617015582:android:6fefc3dafde9014821970f",
+        "android_client_info": {
+          "package_name": "com.kehadiran"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "381617015582-rsrmkka651c66574raili061kv7eqt58.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQubrjL95d8d2yzTdR5z_d_AtTqvAFwig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "381617015582-rsrmkka651c66574raili061kv7eqt58.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

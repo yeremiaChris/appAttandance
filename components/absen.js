@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -18,35 +18,14 @@ import {
 import {CheckBox} from 'react-native-elements';
 import SelectPickker from '../shared/SelectPicker';
 import RadioButtonRN from 'radio-buttons-react-native';
-
+import {getDaftar} from '../firestore/daftar';
 const initialDoaPagi = [
   {
-    nama: 'Yeremia Chris Saragi',
-    angkatan: 2018,
-    jurusan: 'Sistem Informasi',
-    key: '1',
-    check: false,
-  },
-  {
-    nama: 'Yeremia Chris Saragi',
-    angkatan: 2018,
-    jurusan: 'Sistem Informasi',
-    key: '2',
-    check: false,
-  },
-  {
-    nama: 'Yeremia Chris Saragi',
-    angkatan: 2018,
-    jurusan: 'Sistem Informasi',
-    key: '3',
-    check: false,
-  },
-  {
-    nama: 'Yeremia Chris Saragi',
-    angkatan: 2018,
-    jurusan: 'Sistem Informasi',
-    key: '4',
-    check: false,
+    nama: '',
+    angkatan: '',
+    jurusan: '',
+    key: '',
+    check: '',
   },
 ];
 // radio button
@@ -65,7 +44,7 @@ const label = [
 ];
 export default function Absen() {
   // state doapagi
-  const [doaPagi, setDoaPagi] = useState(initialDoaPagi);
+  const [doaPagi, setDoaPagi] = useState([]);
   // state select
   const [items, setItems] = useState(label);
   const [nilai, setNilai] = useState({
@@ -102,6 +81,10 @@ export default function Absen() {
       //clicking out side of alert will not cancel
     );
   };
+  // getData
+  useEffect(() => {
+    getDaftar(setDoaPagi);
+  });
 
   return (
     <View style={styles.viewForCard}>

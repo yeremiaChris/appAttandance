@@ -5,7 +5,7 @@
  * @format
  * @flow strict-local
  */
-import React from 'react';
+import React, {useEffect} from 'react';
 
 // navigation
 import {NavigationContainer} from '@react-navigation/native';
@@ -14,6 +14,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 // stackNavigator
 import DrawerNav from './routes/drawerNav';
 import {StyleSheet} from 'react-native';
+import firestore from '@react-native-firebase/firestore';
 
 const App: () => React$Node = () => {
   const styles = StyleSheet.create({
@@ -22,6 +23,7 @@ const App: () => React$Node = () => {
       right: 10,
     },
   });
+
   return (
     <>
       <PaperProvider>

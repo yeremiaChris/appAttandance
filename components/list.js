@@ -25,28 +25,15 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Checkbox} from 'react-native-paper';
 import {object} from 'yup';
 import ModalDetail from '../shared/modalDetail';
+import firestore from '@react-native-firebase/firestore';
+import {getDaftar, deleteDaftar} from '../firestore/daftar';
 const initialSiswa = [
   {
-    nama: 'apa Chris Saragi',
-    angkatan: 2018,
-    jurusan: 'Sistem Informasi',
-    key: '20',
-    check: false,
-  },
-  {
-    nama: 'Yeremia Chris Saragi',
-    angkatan: 2018,
-    jurusan: 'Sistem Informasi',
-    key: '2',
-    check: false,
-  },
-
-  {
-    nama: 'Yeremia Chris Saragi',
-    angkatan: 2018,
-    jurusan: 'Sistem Informasi',
-    key: '3',
-    check: false,
+    nama: '',
+    angkatan: '',
+    jurusan: '',
+    key: '',
+    check: '',
   },
 ];
 // initialDetail
@@ -63,7 +50,7 @@ const label = [
   {label: 'Angkatan 2017', value: '2017'},
 ];
 export default function list() {
-  const [siswa, setSiswa] = useState(initialSiswa);
+  const [siswa, setSiswa] = useState([]);
   // modalDetail
   const [visible, setVisible] = useState(false);
 
@@ -110,10 +97,7 @@ export default function list() {
         {
           text: 'Yes',
           onPress: () => {
-            setSiswa((prev) => {
-              return prev.filter((p) => p.check != true);
-            }),
-              setDisplay(false);
+            console.log(siswa);
           },
         },
         {
@@ -131,6 +115,10 @@ export default function list() {
   const [nilai, setNilai] = useState({
     tangkapValue: null,
   });
+  // get data from firestore
+  useEffect(() => {
+    getDaftar(setSiswa);
+  }, []);
   return (
     <View style={styles.cardWrapper}>
       {/* modal */}
