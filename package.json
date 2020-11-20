@@ -20,6 +20,7 @@
     "@react-navigation/drawer": "^5.11.2",
     "@react-navigation/native": "^5.8.9",
     "@react-navigation/stack": "^5.12.5",
+    "firebase": "^8.1.1",
     "formik": "^2.2.5",
     "mdi-react": "^7.4.0",
     "radio-buttons-react-native": "^1.0.4",
