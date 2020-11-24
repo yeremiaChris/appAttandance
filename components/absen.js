@@ -17,7 +17,7 @@ import {
 } from 'react-native-paper';
 import {CheckBox} from 'react-native-elements';
 import SelectPickker from '../shared/SelectPicker';
-import {getDoaPagi, absen} from '../firestore/daftar';
+import {getDoaPagi, absen, buatLaporan, yangHadir} from '../firestore/daftar';
 import SelectPicker from '../shared/SelectPicker';
 
 // radio button
@@ -40,7 +40,7 @@ const brg = [
   {id: 2, label: 'Button3'},
   {id: 3, label: 'Button4'},
 ];
-export default function Absen() {
+export default function Absen({navigation}) {
   // mengelola pilihan absen
   const [items, setItems] = useState(label);
 
@@ -57,23 +57,34 @@ export default function Absen() {
   // pilihan dari select
   const handlePilih = () => console.log('test');
 
+  // mensortir yang hadir saja
+  const [hadirSaja, setHadirSaja] = useState([]);
+  useEffect(() => {
+    yangHadir(setHadirSaja);
+  }, []);
+  const buatL = () => {
+    buatLaporan(hadirSaja);
+  };
+
   // alert berhasil take attandance
   const twoOptionAlertHandler = () => {
     //function to make two option alert
     Alert.alert(
       //title
-      'Berhasil mengambil absen',
+      'Berhasil mengabsen',
       //body
-      'Lihat laporan ?',
+      'Simpan Laporan.',
       [
         {
-          text: 'Yes',
+          text: 'Ya',
           onPress: () => {
             console.log('masuk ke laporan');
+            buatL();
+            navigation.navigate('Laporan');
           },
         },
         {
-          text: 'No',
+          text: 'Tidak',
           onPress: () => console.log('test'),
           style: 'cancel',
         },
@@ -85,21 +96,20 @@ export default function Absen() {
 
   // state doapagi
   const [doaPagi, setDoaPagi] = useState([]);
+
   // getData
   useEffect(() => {
     getDoaPagi(setDoaPagi);
   }, []);
 
-  // mengelola radio button pilihan hadir dan tidak hadir
-  const [checked, setChecked] = useState(false);
-
   // mengelola absen doa pagi
-  const sett = (doc, angkatan, nama, doapagi) => {
-    absen(doc, angkatan, nama, doapagi);
+  const sett = (doc, angkatan, nama, doapagi, jurusan) => {
+    absen(doc, angkatan, nama, doapagi, jurusan);
   };
   // key
   const [hadir, setHadir] = useState(true);
   const [tidakHadir, setTidakHadir] = useState(true);
+
   return (
     <View style={styles.viewForCard}>
       <SelectPickker
@@ -158,34 +168,24 @@ export default function Absen() {
                               item.checkHadir == true &&
                               item.checkTidakHadir == false
                             ) {
-                              sett(item.key, item.angkatan, item.nama, 'Hadir');
+                              sett(
+                                item.key,
+                                item.angkatan,
+                                item.nama,
+                                'Hadir',
+                                item.jurusan,
+                              );
                             } else {
                               item.checkHadir = false;
                               item.checkTidakHadir = false;
-                              sett(item.key, item.angkatan, item.nama, '');
+                              sett(
+                                item.key,
+                                item.angkatan,
+                                item.nama,
+                                '',
+                                item.jurusan,
+                              );
                             }
-                            // console.log(item.checkHadir);
-                            // console.log(item.checkTidakHadir);
-                            // console.log(item.checkTidakHadir);
-                            // console.log(item.checkTidakHadir);
-                            // if (
-                            //   item.checkHadir == false &&
-                            //   item.checkTidakHadir == false
-                            // ) {
-                            //   item.checkHadir = hadir;
-                            //   setHadir(!hadir);
-                            // }
-                            // handle absen
-                            // if (
-                            //   item.checkHadir == true &&
-                            //   item.checkTidakHadir == false
-                            // ) {
-                            //   // sett(item.key, item.angkatan, item.nama, 'Hadir');
-                            //   item.checkTidakHadir = tidakHadir;
-                            //   setTidakHadir(false);
-                            //   console.log(item.checkHadir, 'satu');
-                            //   console.log(item.checkTidakHadir, 'satus');
-                            // }
                           }}
                         />
                       </View>
@@ -212,27 +212,19 @@ export default function Absen() {
                                 item.angkatan,
                                 item.nama,
                                 'Tidak Hadir',
+                                item.jurusan,
                               );
                             } else {
                               item.checkHadir = false;
                               item.checkTidakHadir = false;
-                              sett(item.key, item.angkatan, item.nama, '');
+                              sett(
+                                item.key,
+                                item.angkatan,
+                                item.nama,
+                                '',
+                                item.jurusan,
+                              );
                             }
-                            // item.checkTidakHadir = tidakHadir;
-                            // setTidakHadir(!tidakHadir);
-                            // item.checkHadir = false;
-                            // console.log(item.checkTidakHadir);
-                            // console.log(item.checkHadir);
-                            // if (
-                            //   item.checkHadir == true &&
-                            //   item.checkTidakHadir == false
-                            // ) {
-                            //   item.checkHadir = false;
-                            //   item.checkTidakHadir = tidakHadir;
-                            //   setTidakHadir(!tidakHadir);
-                            //   console.log(item.checkHadir, 'hadir');
-                            //   console.log(item.checkTidakHadir, 'tidakHadir');
-                            // }
                           }}
                         />
                       </View>
@@ -254,10 +246,8 @@ export default function Absen() {
         style={styles.fab}
         medium
         icon="send"
-        onPress={() => {
-          // console.log('test');
-          // datas();
-          console.log(key);
+        onPress={(key) => {
+          twoOptionAlertHandler();
         }}
       />
     </View>

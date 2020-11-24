@@ -1,12 +1,14 @@
 import React from 'react';
 const Drawer = createDrawerNavigator();
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import List from '../components/list';
-import Absen from '../components/absen';
-import Laporan from '../components/laporan';
 import SearchBar from 'react-native-dynamic-search-bar';
 import {StyleSheet} from 'react-native';
 import bottomaBar from './bottomBar';
+import absenStack from './absenStack';
+import laporanStack from './laporanStack';
+import bottomDaftar from './bottomDaftar';
+import bottomAbsen from './bottomAbsen';
+import bottomLaporan from './bottomLaporan';
 export default function drawerNav() {
   return (
     <Drawer.Navigator initialRouteName="Home">
@@ -15,54 +17,9 @@ export default function drawerNav() {
         component={bottomaBar}
         options={{headerShown: false}}
       />
-      <Drawer.Screen
-        name="Daftar"
-        component={List}
-        options={{
-          headerTitle: () => (
-            <SearchBar
-              style={styles.search}
-              placeholder="Cari Siswa..."
-              onChangeText={(text) => {
-                console.log(text);
-              }}
-              onPress={() => alert('onPress')}
-            />
-          ),
-        }}
-      />
-      <Drawer.Screen
-        name="Absen"
-        component={Absen}
-        options={{
-          headerTitle: () => (
-            <SearchBar
-              style={styles.search}
-              placeholder="Cari Siswa..."
-              onChangeText={(text) => {
-                console.log(text);
-              }}
-              onPress={() => alert('onPress')}
-            />
-          ),
-        }}
-      />
-      <Drawer.Screen
-        name="Laporan"
-        component={Laporan}
-        options={{
-          headerTitle: () => (
-            <SearchBar
-              style={styles.search}
-              placeholder="Cari Siswa..."
-              onChangeText={(text) => {
-                console.log(text);
-              }}
-              onPress={() => alert('onPress')}
-            />
-          ),
-        }}
-      />
+      <Drawer.Screen name="Daftar" component={bottomDaftar} />
+      <Drawer.Screen name="Absen" component={bottomAbsen} />
+      <Drawer.Screen name="Laporan" component={bottomLaporan} />
     </Drawer.Navigator>
   );
 }
