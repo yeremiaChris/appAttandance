@@ -18,6 +18,7 @@ import {
 import {CheckBox} from 'react-native-elements';
 import SelectPickker from '../shared/SelectPicker';
 import {getDoaPagi, absen} from '../firestore/daftar';
+import SelectPicker from '../shared/SelectPicker';
 
 // radio button
 const data = [
@@ -32,6 +33,12 @@ const data = [
 const label = [
   {label: 'Doa Pagi', value: 'Doa Pagi'},
   {label: 'Ibadah Minggu', value: 'Ibadah Minggu'},
+];
+const brg = [
+  {id: 0, label: 'Button1'},
+  {id: 1, label: 'Button2'},
+  {id: 2, label: 'Button3'},
+  {id: 3, label: 'Button4'},
 ];
 export default function Absen() {
   // mengelola pilihan absen
@@ -87,10 +94,12 @@ export default function Absen() {
   const [checked, setChecked] = useState(false);
 
   // mengelola absen doa pagi
-  const [value, setValue] = React.useState('first');
   const sett = (doc, angkatan, nama, doapagi) => {
     absen(doc, angkatan, nama, doapagi);
   };
+  // key
+  const [hadir, setHadir] = useState(true);
+  const [tidakHadir, setTidakHadir] = useState(true);
   return (
     <View style={styles.viewForCard}>
       <SelectPickker
@@ -131,25 +140,102 @@ export default function Absen() {
                   <View>
                     <Title style={styles.keterangan}>Keterangan</Title>
                     <View style={styles.radio}>
-                      <RadioButton.Group
-                        key={item.key}
-                        style={styles.radio}
-                        onValueChange={(newValue) => {
-                          console.log(newValue);
-                          console.log(item.key);
-                          setValue(newValue);
-                          sett(item.key, item.angkatan, item.nama, newValue);
-                        }}
-                        value={value}>
-                        <View style={styles.radioChild}>
-                          <Text>Hadir</Text>
-                          <RadioButton value="Hadir" />
-                        </View>
-                        <View style={styles.radioChild}>
-                          <Text>Tiidak Hadir</Text>
-                          <RadioButton value="Tidak Hadir" />
-                        </View>
-                      </RadioButton.Group>
+                      <View style={styles.radioChild}>
+                        <Text>Hadir</Text>
+                        <RadioButton
+                          value={item.kehadiran.hadir}
+                          status={
+                            item.checkHadir == true &&
+                            item.checkTidakHadir == false
+                              ? 'checked'
+                              : 'unchecked'
+                          }
+                          onPress={() => {
+                            item.checkHadir = hadir;
+                            setHadir(!hadir);
+                            item.checkTidakHadir = false;
+                            if (
+                              item.checkHadir == true &&
+                              item.checkTidakHadir == false
+                            ) {
+                              sett(item.key, item.angkatan, item.nama, 'Hadir');
+                            } else {
+                              item.checkHadir = false;
+                              item.checkTidakHadir = false;
+                              sett(item.key, item.angkatan, item.nama, '');
+                            }
+                            // console.log(item.checkHadir);
+                            // console.log(item.checkTidakHadir);
+                            // console.log(item.checkTidakHadir);
+                            // console.log(item.checkTidakHadir);
+                            // if (
+                            //   item.checkHadir == false &&
+                            //   item.checkTidakHadir == false
+                            // ) {
+                            //   item.checkHadir = hadir;
+                            //   setHadir(!hadir);
+                            // }
+                            // handle absen
+                            // if (
+                            //   item.checkHadir == true &&
+                            //   item.checkTidakHadir == false
+                            // ) {
+                            //   // sett(item.key, item.angkatan, item.nama, 'Hadir');
+                            //   item.checkTidakHadir = tidakHadir;
+                            //   setTidakHadir(false);
+                            //   console.log(item.checkHadir, 'satu');
+                            //   console.log(item.checkTidakHadir, 'satus');
+                            // }
+                          }}
+                        />
+                      </View>
+                      <View style={styles.radioChild}>
+                        <Text>Tiidak Hadir</Text>
+                        <RadioButton
+                          value={item.kehadiran.tidakHadir}
+                          status={
+                            item.checkTidakHadir == true &&
+                            item.checkHadir == false
+                              ? 'checked'
+                              : 'unchecked'
+                          }
+                          onPress={() => {
+                            item.checkTidakHadir = tidakHadir;
+                            setTidakHadir(!tidakHadir);
+                            item.checkHadir = false;
+                            if (
+                              item.checkTidakHadir == true &&
+                              item.checkHadir == false
+                            ) {
+                              sett(
+                                item.key,
+                                item.angkatan,
+                                item.nama,
+                                'Tidak Hadir',
+                              );
+                            } else {
+                              item.checkHadir = false;
+                              item.checkTidakHadir = false;
+                              sett(item.key, item.angkatan, item.nama, '');
+                            }
+                            // item.checkTidakHadir = tidakHadir;
+                            // setTidakHadir(!tidakHadir);
+                            // item.checkHadir = false;
+                            // console.log(item.checkTidakHadir);
+                            // console.log(item.checkHadir);
+                            // if (
+                            //   item.checkHadir == true &&
+                            //   item.checkTidakHadir == false
+                            // ) {
+                            //   item.checkHadir = false;
+                            //   item.checkTidakHadir = tidakHadir;
+                            //   setTidakHadir(!tidakHadir);
+                            //   console.log(item.checkHadir, 'hadir');
+                            //   console.log(item.checkTidakHadir, 'tidakHadir');
+                            // }
+                          }}
+                        />
+                      </View>
                     </View>
                   </View>
                 </TouchableOpacity>
@@ -217,5 +303,8 @@ const styles = StyleSheet.create({
   },
   box: {
     width: 120,
+  },
+  test: {
+    elevation: 10,
   },
 });

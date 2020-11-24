@@ -31,10 +31,11 @@ export const getDoaPagi = async (set, value) => {
         jurusan: doc.data().jurusan,
         key: doc.id,
         kehadiran: {
-          hadir: 'hadir',
-          tidakHadir: 'tidakHadir',
+          hadir: 'Hadir',
+          tidakHadir: 'Tidak Hadir',
         },
-        doa: '',
+        checkHadir: false,
+        checkTidakHadir: false,
       };
       list.push(datas);
     });
