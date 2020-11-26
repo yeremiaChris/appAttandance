@@ -9,7 +9,7 @@ import Header from '../shared/Header';
 import SearchBar from 'react-native-dynamic-search-bar';
 import {StyleSheet} from 'react-native';
 
-export default function homeStack(props) {
+export default function homeStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen

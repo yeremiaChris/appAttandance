@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Card,
   Title,
@@ -9,6 +9,9 @@ import {
 } from 'react-native-paper';
 import {StyleSheet, View, TouchableOpacity, FlatList} from 'react-native';
 import SelectPicker from '../shared/SelectPicker';
+// firestore
+import firestore from '@react-native-firebase/firestore';
+import moment from 'moment';
 
 // label select
 const label = [
@@ -74,6 +77,28 @@ export default function laporan() {
   const changeTitle = (newTitle) => {
     setTitle(newTitle);
   };
+
+  // data laporan yang hadir
+  const [laporan, setLaporan] = useState([]);
+  useEffect(() => {
+    const dataLaporan = firestore()
+      .collection('laporanDoaPagi')
+      .onSnapshot(function (snabshot) {
+        let list = [];
+        const idLocale = require('moment/locale/id');
+        const date = new Date();
+        snabshot.forEach((doc) => {
+          const datas = {
+            hadir: doc.data().jumlahHadir,
+            tanggal: moment(date).format('D MMM Y'),
+            key: doc.id,
+          };
+          list.push(datas);
+        });
+        setLaporan(list);
+      });
+    return () => dataLaporan();
+  }, [laporan]);
   return (
     <View style={styles.viewForCard}>
       <SelectPicker
@@ -98,32 +123,35 @@ export default function laporan() {
         </Card>
       </View>
       <FlatList
-        data={pilih}
+        data={laporan}
         keyExtractor={(item) => item.key}
-        renderItem={({item}) => (
-          <View>
-            <Card style={styles.container}>
-              <Card.Content style={styles.card}>
-                <View>
-                  <Title>{item.title}</Title>
-                  <Paragraph>{item.tanggal}</Paragraph>
-                </View>
-                <View style={styles.surfaceContainer}>
-                  <Text>Hadir</Text>
-                  <Surface style={styles.surface}>
-                    <Text style={styles.textSurface}>{item.hadir}</Text>
-                  </Surface>
-                </View>
-                <View style={styles.surfaceContainer}>
-                  <Text>Tidak Hadir</Text>
-                  <Surface style={styles.surface}>
-                    <Text style={styles.textSurface}>{item.tidakHadir}</Text>
-                  </Surface>
-                </View>
-              </Card.Content>
-            </Card>
-          </View>
-        )}
+        renderItem={({item}) => {
+          return (
+            <View>
+              <Card style={styles.container}>
+                <Card.Content style={styles.card}>
+                  <View>
+                    <Title>Doa Pagi</Title>
+                    <Paragraph>{item.tanggal}</Paragraph>
+                    <Paragraph>pukul {item.jam}</Paragraph>
+                  </View>
+                  <View style={styles.surfaceContainer}>
+                    <Text>Hadir</Text>
+                    <Surface style={styles.surface}>
+                      <Text style={styles.textSurface}>{item.hadir}</Text>
+                    </Surface>
+                  </View>
+                  <View style={styles.surfaceContainer}>
+                    <Text>Tidak Hadir</Text>
+                    <Surface style={styles.surface}>
+                      <Text style={styles.textSurface}>10</Text>
+                    </Surface>
+                  </View>
+                </Card.Content>
+              </Card>
+            </View>
+          );
+        }}
       />
     </View>
   );

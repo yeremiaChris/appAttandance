@@ -7,9 +7,10 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import List from '../components/list';
 import laporanStack from './laporanStack';
 const Tab = createBottomTabNavigator();
-export default function bottomBar() {
+export default function bottomBar({route}) {
   return (
     <Tab.Navigator
+      initialRouteName={route.name}
       tabBarOptions={{
         activeTintColor: 'purple',
         inactiveTintColor: 'grey',

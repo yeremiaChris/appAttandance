@@ -44,7 +44,6 @@ export default function homeStack({navigation}) {
         name="Laporan"
         component={Laporan}
         options={{
-          headerLeft: null,
           headerTitle: () => (
             <>
               <View style={styles.header}>

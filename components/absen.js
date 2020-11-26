@@ -19,6 +19,8 @@ import {CheckBox} from 'react-native-elements';
 import SelectPickker from '../shared/SelectPicker';
 import {getDoaPagi, absen, buatLaporan, yangHadir} from '../firestore/daftar';
 import SelectPicker from '../shared/SelectPicker';
+// firestore
+import firestore from '@react-native-firebase/firestore';
 
 // radio button
 const data = [
@@ -60,8 +62,25 @@ export default function Absen({navigation}) {
   // mensortir yang hadir saja
   const [hadirSaja, setHadirSaja] = useState([]);
   useEffect(() => {
-    yangHadir(setHadirSaja);
-  }, []);
+    const yangHadir = firestore()
+      .collection('doapagi')
+      .where('doapagi', '==', 'Hadir')
+      .onSnapshot((snabshot) => {
+        let list = [];
+        snabshot.forEach((doc) => {
+          const datas = {
+            nama: doc.data().nama,
+            angkatan: doc.data().angkatan,
+            jurusan: doc.data().jurusan,
+            Kehadiran: doc.data().doapagi,
+          };
+          list.push(datas);
+        });
+        setHadirSaja(list);
+      });
+    return () => yangHadir();
+  }, [hadirSaja]);
+
   const buatL = () => {
     buatLaporan(hadirSaja);
   };
@@ -99,17 +118,79 @@ export default function Absen({navigation}) {
 
   // getData
   useEffect(() => {
-    getDoaPagi(setDoaPagi);
-  }, []);
-
+    const getDoaPagi = firestore()
+      .collection('daftar')
+      .onSnapshot(function (snabshot) {
+        let list = [];
+        snabshot.forEach((doc) => {
+          const datas = {
+            nama: doc.data().nama,
+            angkatan: doc.data().angkatan,
+            jurusan: doc.data().jurusan,
+            key: doc.id,
+            hadir: doc.data().hadir,
+            tidakHadir: doc.data().tidakHadir,
+          };
+          list.push(datas);
+        });
+        setDoaPagi(list);
+      });
+    return () => getDoaPagi();
+  }, [doaPagi]);
   // mengelola absen doa pagi
   const sett = (doc, angkatan, nama, doapagi, jurusan) => {
     absen(doc, angkatan, nama, doapagi, jurusan);
   };
-  // key
-  const [hadir, setHadir] = useState(true);
-  const [tidakHadir, setTidakHadir] = useState(true);
 
+  // radio button
+  const changeRadio = (
+    doc,
+    nama,
+    angkatan,
+    check,
+    hadir,
+    jurusan,
+    kehadiran,
+    tidakHadir,
+  ) => {
+    firestore()
+      .collection('daftar')
+      .doc(doc)
+      .set({
+        nama,
+        angkatan,
+        check,
+        hadir,
+        jurusan,
+        kehadiran,
+        tidakHadir,
+      })
+      .then((res) => console.log('radioBerubah'))
+      .catch((err) => console.log('kereen'));
+  };
+
+  // handleKe laporan
+  const handleChangeRadioButton = (doc, nama, angkatan, jurusan, kehadiran) => {
+    firestore()
+      .collection('doapagi')
+      .doc(doc)
+      .set({
+        nama,
+        angkatan,
+        jurusan,
+        kehadiran,
+      })
+      .then(() => {
+        console.log('berhasil');
+      })
+      .catch(() => {
+        console.log('error');
+      });
+  };
+  // key;
+  const [hadir, setHadir] = useState(false);
+  const [tidakHadir, setTidakHadir] = useState(true);
+  const [value, setValue] = React.useState('first');
   return (
     <View style={styles.viewForCard}>
       <SelectPickker
@@ -153,79 +234,89 @@ export default function Absen({navigation}) {
                       <View style={styles.radioChild}>
                         <Text>Hadir</Text>
                         <RadioButton
-                          value={item.kehadiran.hadir}
                           status={
-                            item.checkHadir == true &&
-                            item.checkTidakHadir == false
+                            item.hadir === true && item.tidakHadir === false
                               ? 'checked'
                               : 'unchecked'
                           }
                           onPress={() => {
-                            item.checkHadir = hadir;
+                            changeRadio(
+                              item.key,
+                              item.nama,
+                              item.angkatan,
+                              item.check,
+                              hadir,
+                              item.jurusan,
+                              item.kehadiran,
+                              false,
+                            );
                             setHadir(!hadir);
-                            item.checkTidakHadir = false;
                             if (
-                              item.checkHadir == true &&
-                              item.checkTidakHadir == false
+                              item.hadir === true &&
+                              item.tidakHadir === false
                             ) {
-                              sett(
+                              handleChangeRadioButton(
                                 item.key,
-                                item.angkatan,
                                 item.nama,
-                                'Hadir',
+                                item.angkatan,
                                 item.jurusan,
+                                'Tanpa Keterangan',
                               );
                             } else {
-                              item.checkHadir = false;
-                              item.checkTidakHadir = false;
-                              sett(
+                              handleChangeRadioButton(
                                 item.key,
-                                item.angkatan,
                                 item.nama,
-                                '',
+                                item.angkatan,
                                 item.jurusan,
+                                'Hadir',
                               );
                             }
                           }}
+                          value="Hadir"
                         />
                       </View>
                       <View style={styles.radioChild}>
                         <Text>Tiidak Hadir</Text>
                         <RadioButton
-                          value={item.kehadiran.tidakHadir}
                           status={
-                            item.checkTidakHadir == true &&
-                            item.checkHadir == false
+                            item.hadir == false && item.tidakHadir == true
                               ? 'checked'
                               : 'unchecked'
                           }
                           onPress={() => {
-                            item.checkTidakHadir = tidakHadir;
+                            changeRadio(
+                              item.key,
+                              item.nama,
+                              item.angkatan,
+                              item.check,
+                              false,
+                              item.jurusan,
+                              item.kehadiran,
+                              tidakHadir,
+                            );
                             setTidakHadir(!tidakHadir);
-                            item.checkHadir = false;
                             if (
-                              item.checkTidakHadir == true &&
-                              item.checkHadir == false
+                              item.hadir === false &&
+                              item.tidakHadir === true
                             ) {
-                              sett(
+                              handleChangeRadioButton(
                                 item.key,
-                                item.angkatan,
                                 item.nama,
-                                'Tidak Hadir',
+                                item.angkatan,
                                 item.jurusan,
+                                'Tanpa Keterangan',
                               );
                             } else {
-                              item.checkHadir = false;
-                              item.checkTidakHadir = false;
-                              sett(
+                              handleChangeRadioButton(
                                 item.key,
-                                item.angkatan,
                                 item.nama,
-                                '',
+                                item.angkatan,
                                 item.jurusan,
+                                'Tidak Hadir',
                               );
                             }
                           }}
+                          value="Tidak Hadir"
                         />
                       </View>
                     </View>

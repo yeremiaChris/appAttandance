@@ -25,8 +25,9 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Checkbox} from 'react-native-paper';
 import {object} from 'yup';
 import ModalDetail from '../shared/modalDetail';
+// firestore
 import firestore from '@react-native-firebase/firestore';
-import {getDaftar, deleteDaftar} from '../firestore/daftar';
+
 const initialSiswa = [
   {
     nama: '',
@@ -50,10 +51,8 @@ const label = [
   {label: 'Angkatan 2017', value: '2017'},
 ];
 export default function list() {
-  const [siswa, setSiswa] = useState([]);
   // modalDetail
   const [visible, setVisible] = useState(false);
-
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
   const containerStyle = {backgroundColor: 'white', padding: 20};
@@ -110,15 +109,36 @@ export default function list() {
       //clicking out side of alert will not cancel
     );
   };
+
   // state
   const [items, setItems] = useState(label);
   const [nilai, setNilai] = useState({
     tangkapValue: null,
   });
+
   // get data from firestore
+  const [siswa, setSiswa] = useState([]);
   useEffect(() => {
-    getDaftar(setSiswa);
-  }, []);
+    const getDaftar = firestore()
+      .collection('daftar')
+      .onSnapshot(function (snabshot) {
+        let list = [];
+        snabshot.forEach((doc) => {
+          const datas = {
+            nama: doc.data().nama,
+            angkatan: doc.data().angkatan,
+            jurusan: doc.data().jurusan,
+            key: doc.id,
+            check: false,
+            kehadiran: '',
+          };
+          list.push(datas);
+        });
+        setSiswa(list);
+      });
+    return () => getDaftar();
+  }, [siswa]);
+
   return (
     <View style={styles.cardWrapper}>
       {/* modal */}
