@@ -12,7 +12,8 @@ import SelectPicker from '../shared/SelectPicker';
 // firestore
 import firestore from '@react-native-firebase/firestore';
 import moment from 'moment';
-
+// modal daftar hadir dan tidak
+import DaftarHadirDanTidak from '../routes/daftarYangHadirDanTidak';
 // label select
 const label = [
   {label: 'Doa Pagi', value: 'Doa Pagi'},
@@ -58,20 +59,18 @@ export default function laporan() {
   const [nilai, setNilai] = useState({
     tangkapValue: null,
   });
-  // state laporan doapagi
-  const [doaPagi, setDoapagi] = useState(DoaPagi);
-  // state ibadah minggu
-  const [ibadahMinggu, setIbadahMinggu] = useState(IbadahMinggu);
 
   // mengelola state pilih
   const [pilih, setPilih] = useState(DoaPagi);
   const handlePilihMinggu = () => {
     setPilih(IbadahMinggu);
   };
+
   // doa pagi
   const handlePilihPagi = () => {
     setPilih(DoaPagi);
   };
+
   // ganti data pada select agar ketika kita pilih doa pagi maka data yang di tampilkan adalah doa pagi
   const [title, setTitle] = useState('Doa Pagi');
   const changeTitle = (newTitle) => {
@@ -79,28 +78,42 @@ export default function laporan() {
   };
 
   // data laporan yang hadir
-  const [laporan, setLaporan] = useState([]);
+  const [listLaporan, setListLaporan] = useState([]);
   useEffect(() => {
     const dataLaporan = firestore()
       .collection('laporanDoaPagi')
+      .orderBy('waktu', 'desc')
       .onSnapshot(function (snabshot) {
         let list = [];
-        const idLocale = require('moment/locale/id');
-        const date = new Date();
         snabshot.forEach((doc) => {
           const datas = {
-            hadir: doc.data().jumlahHadir,
-            tanggal: moment(date).format('D MMM Y'),
+            hadir: doc.data().totalHadir,
+            tidakHadir: doc.data().totalTidakHadir,
+            tanggal: doc.data().tanggal,
+            jam: doc.data().jam,
             key: doc.id,
           };
           list.push(datas);
         });
-        setLaporan(list);
+        setListLaporan(list);
       });
     return () => dataLaporan();
-  }, [laporan]);
+  }, []);
+
+  // handleModal Form hadir dan tidak
+  const [modal, setModal] = useState(false);
+  // handle button tambah
+  const handleForm = () => {
+    setModal(true);
+  };
+
+  // closeModal form hadir tidak
+  const closeModal = () => {
+    setModal(false);
+  };
   return (
     <View style={styles.viewForCard}>
+      <DaftarHadirDanTidak modal={modal} closeModal={closeModal} />
       <SelectPicker
         title="Pilih laporan"
         items={items}
@@ -123,33 +136,37 @@ export default function laporan() {
         </Card>
       </View>
       <FlatList
-        data={laporan}
+        data={listLaporan}
         keyExtractor={(item) => item.key}
         renderItem={({item}) => {
           return (
-            <View>
-              <Card style={styles.container}>
-                <Card.Content style={styles.card}>
-                  <View>
-                    <Title>Doa Pagi</Title>
-                    <Paragraph>{item.tanggal}</Paragraph>
-                    <Paragraph>pukul {item.jam}</Paragraph>
-                  </View>
-                  <View style={styles.surfaceContainer}>
-                    <Text>Hadir</Text>
-                    <Surface style={styles.surface}>
-                      <Text style={styles.textSurface}>{item.hadir}</Text>
-                    </Surface>
-                  </View>
-                  <View style={styles.surfaceContainer}>
-                    <Text>Tidak Hadir</Text>
-                    <Surface style={styles.surface}>
-                      <Text style={styles.textSurface}>10</Text>
-                    </Surface>
-                  </View>
-                </Card.Content>
-              </Card>
-            </View>
+            <TouchableOpacity onPress={() => handleForm()}>
+              <View>
+                <Card style={styles.container}>
+                  <Card.Content style={styles.card}>
+                    <View>
+                      <Title>Doa Pagi</Title>
+                      <Paragraph>{item.tanggal}</Paragraph>
+                      <Paragraph>pukul {item.jam} </Paragraph>
+                    </View>
+                    <View style={styles.surfaceContainer}>
+                      <Text>Hadir</Text>
+                      <Surface style={styles.surface}>
+                        <Text style={styles.textSurface}>{item.hadir}</Text>
+                      </Surface>
+                    </View>
+                    <View style={styles.surfaceContainer}>
+                      <Text>Tidak Hadir</Text>
+                      <Surface style={styles.surface}>
+                        <Text style={styles.textSurface}>
+                          {item.tidakHadir}
+                        </Text>
+                      </Surface>
+                    </View>
+                  </Card.Content>
+                </Card>
+              </View>
+            </TouchableOpacity>
           );
         }}
       />

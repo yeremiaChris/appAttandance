@@ -17,7 +17,11 @@ import {
 } from 'react-native-paper';
 import {CheckBox} from 'react-native-elements';
 import SelectPickker from '../shared/SelectPicker';
-import {getDoaPagi, absen, buatLaporan, yangHadir} from '../firestore/daftar';
+import {
+  buatLaporan,
+  handleChangeRadioButton,
+  changeRadio,
+} from '../firestore/daftar';
 import SelectPicker from '../shared/SelectPicker';
 // firestore
 import firestore from '@react-native-firebase/firestore';
@@ -43,9 +47,8 @@ const brg = [
   {id: 3, label: 'Button4'},
 ];
 export default function Absen({navigation}) {
-  // mengelola pilihan absen
+  // mengelola pilihan absen pada select picker
   const [items, setItems] = useState(label);
-
   const [nilai, setNilai] = useState({
     tangkapValue: null,
   });
@@ -64,25 +67,64 @@ export default function Absen({navigation}) {
   useEffect(() => {
     const yangHadir = firestore()
       .collection('doapagi')
-      .where('doapagi', '==', 'Hadir')
+      .where('kehadiran', '==', 'Hadir')
       .onSnapshot((snabshot) => {
+        let list = [];
+        snabshot.forEach((doc) => {
+          list.push(doc.data());
+        });
+        setHadirSaja(list);
+      });
+  }, []);
+
+  // daftar yang tidak hadir saja
+  const [tidakHadirSaja, setTidakHadirSaja] = useState([]);
+  useEffect(() => {
+    const yangTidakHadir = firestore()
+      .collection('doapagi')
+      .where('kehadiran', '==', 'Tidak Hadir')
+      .onSnapshot((snabshot) => {
+        let list = [];
+        snabshot.forEach((doc) => {
+          list.push(doc.data());
+        });
+        setTidakHadirSaja(list);
+      });
+    return () => yangTidakHadir();
+  }, []);
+
+  // buat laporan yang hadir saja dan tidak hadir
+  const buatL = () => {
+    buatLaporan(tidakHadirSaja, hadirSaja);
+  };
+
+  // state doapagi
+  const [doaPagi, setDoaPagi] = useState([]);
+  // getData doa pagi
+  useEffect(() => {
+    const getDoaPagi = firestore()
+      .collection('daftar')
+      .onSnapshot(function (snabshot) {
         let list = [];
         snabshot.forEach((doc) => {
           const datas = {
             nama: doc.data().nama,
             angkatan: doc.data().angkatan,
             jurusan: doc.data().jurusan,
-            Kehadiran: doc.data().doapagi,
+            key: doc.id,
+            hadir: doc.data().hadir,
+            tidakHadir: doc.data().tidakHadir,
           };
           list.push(datas);
         });
-        setHadirSaja(list);
+        setDoaPagi(list);
       });
-    return () => yangHadir();
-  }, [hadirSaja]);
+    return () => getDoaPagi();
+  }, []);
 
-  const buatL = () => {
-    buatLaporan(hadirSaja);
+  // mengelola absen doa pagi
+  const sett = (doc, angkatan, nama, doapagi, jurusan) => {
+    absen(doc, angkatan, nama, doapagi, jurusan);
   };
 
   // alert berhasil take attandance
@@ -113,84 +155,9 @@ export default function Absen({navigation}) {
     );
   };
 
-  // state doapagi
-  const [doaPagi, setDoaPagi] = useState([]);
-
-  // getData
-  useEffect(() => {
-    const getDoaPagi = firestore()
-      .collection('daftar')
-      .onSnapshot(function (snabshot) {
-        let list = [];
-        snabshot.forEach((doc) => {
-          const datas = {
-            nama: doc.data().nama,
-            angkatan: doc.data().angkatan,
-            jurusan: doc.data().jurusan,
-            key: doc.id,
-            hadir: doc.data().hadir,
-            tidakHadir: doc.data().tidakHadir,
-          };
-          list.push(datas);
-        });
-        setDoaPagi(list);
-      });
-    return () => getDoaPagi();
-  }, [doaPagi]);
-  // mengelola absen doa pagi
-  const sett = (doc, angkatan, nama, doapagi, jurusan) => {
-    absen(doc, angkatan, nama, doapagi, jurusan);
-  };
-
-  // radio button
-  const changeRadio = (
-    doc,
-    nama,
-    angkatan,
-    check,
-    hadir,
-    jurusan,
-    kehadiran,
-    tidakHadir,
-  ) => {
-    firestore()
-      .collection('daftar')
-      .doc(doc)
-      .set({
-        nama,
-        angkatan,
-        check,
-        hadir,
-        jurusan,
-        kehadiran,
-        tidakHadir,
-      })
-      .then((res) => console.log('radioBerubah'))
-      .catch((err) => console.log('kereen'));
-  };
-
-  // handleKe laporan
-  const handleChangeRadioButton = (doc, nama, angkatan, jurusan, kehadiran) => {
-    firestore()
-      .collection('doapagi')
-      .doc(doc)
-      .set({
-        nama,
-        angkatan,
-        jurusan,
-        kehadiran,
-      })
-      .then(() => {
-        console.log('berhasil');
-      })
-      .catch(() => {
-        console.log('error');
-      });
-  };
   // key;
   const [hadir, setHadir] = useState(false);
-  const [tidakHadir, setTidakHadir] = useState(true);
-  const [value, setValue] = React.useState('first');
+  const [tidakHadir, setTidakHadir] = useState(false);
   return (
     <View style={styles.viewForCard}>
       <SelectPickker
