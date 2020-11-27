@@ -1,14 +1,18 @@
 import React, {useState} from 'react';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import list from '../components/list';
-import laporan from '../components/laporan';
 import {Modal, StyleSheet, View, Text} from 'react-native';
 import {IconButton} from 'react-native-paper';
 import HadirDanTidak from '../components/hadirDanTidak';
 const Tab = createMaterialTopTabNavigator();
-export default function daftarYangHadirDanTidak({modal, closeModal}) {
-  // state modal
-
+export default function daftarYangHadirDanTidak({
+  modal,
+  closeModal,
+  hadir,
+  tidakHadir,
+  jumlahHadir,
+  jumlahTidakHadir,
+}) {
   return (
     <Modal animationType="slide" visible={modal}>
       <View style={styles.header}>
@@ -21,9 +25,29 @@ export default function daftarYangHadirDanTidak({modal, closeModal}) {
         <Text style={styles.textHeader}>Laporan Detail</Text>
       </View>
       <Tab.Navigator>
-        <Tab.Screen name="Hadir" component={HadirDanTidak} />
-        <Tab.Screen name="Tidak Hadir" component={laporan} />
-        <Tab.Screen name="Tanpa Keterangan" component={laporan} />
+        <Tab.Screen name="Hadir">
+          {(props) => (
+            <HadirDanTidak {...props} kehadiran={hadir} jumlah={jumlahHadir} />
+          )}
+        </Tab.Screen>
+        <Tab.Screen name="Tidak Hadir">
+          {(props) => (
+            <HadirDanTidak
+              {...props}
+              kehadiran={tidakHadir}
+              jumlah={jumlahTidakHadir}
+            />
+          )}
+        </Tab.Screen>
+        {/* <Tab.Screen name="Tanpa Keterangan">
+          {(props) => (
+            <HadirDanTidak
+              {...props}
+              kehadiran={tidakHadir}
+              jumlah={jumlahTidakHadir}
+            />
+          )}
+        </Tab.Screen> */}
       </Tab.Navigator>
     </Modal>
   );

@@ -30,7 +30,7 @@ const label = [
   {label: 'Angkatan 2018', value: '2018'},
   {label: 'Angkatan 2017', value: '2017'},
 ];
-export default function HadirDanTidak() {
+export default function HadirDanTidak({kehadiran, jumlah}) {
   // modalDetail
   const [visible, setVisible] = useState(false);
   const showModal = () => setVisible(true);
@@ -42,29 +42,6 @@ export default function HadirDanTidak() {
   const [nilai, setNilai] = useState({
     tangkapValue: null,
   });
-
-  // get data from firestore
-  const [siswa, setSiswa] = useState([]);
-  useEffect(() => {
-    const getDaftar = firestore()
-      .collection('daftar')
-      .onSnapshot(function (snabshot) {
-        let list = [];
-        snabshot.forEach((doc) => {
-          const datas = {
-            nama: doc.data().nama,
-            angkatan: doc.data().angkatan,
-            jurusan: doc.data().jurusan,
-            key: doc.id,
-            check: false,
-            kehadiran: '',
-          };
-          list.push(datas);
-        });
-        setSiswa(list);
-      });
-    return () => getDaftar();
-  }, []);
   return (
     <View style={styles.cardWrapper}>
       <View style={styles.picker}>
@@ -77,32 +54,36 @@ export default function HadirDanTidak() {
         setNilai={setNilai}
       />
       <View style={styles.containerdua}>
-        <FlatList
-          data={siswa}
-          keyExtractor={(item) => item.key}
-          renderItem={({item}) => (
-            <TouchableOpacity>
-              <View style={styles.viewForCard}>
-                <Card style={styles.container}>
-                  <Card.Content style={styles.card}>
-                    <TouchableOpacity>
-                      <View>
-                        <Title>{item.nama}</Title>
-                        <Paragraph>
-                          {item.jurusan} {item.angkatan}
-                        </Paragraph>
-                      </View>
-                    </TouchableOpacity>
-                    <Avatar.Image
-                      size={50}
-                      source={require('../assets/list.png')}
-                    />
-                  </Card.Content>
-                </Card>
-              </View>
-            </TouchableOpacity>
-          )}
-        />
+        {jumlah == 0 ? (
+          <Text>Data Tidak Ada</Text>
+        ) : (
+          <FlatList
+            data={kehadiran}
+            keyExtractor={(item) => Math.random().toString()}
+            renderItem={({item}) => (
+              <TouchableOpacity>
+                <View style={styles.viewForCard}>
+                  <Card style={styles.container}>
+                    <Card.Content style={styles.card}>
+                      <TouchableOpacity>
+                        <View>
+                          <Title>{item.nama}</Title>
+                          <Paragraph>
+                            {item.jurusan} {item.angkatan}
+                          </Paragraph>
+                        </View>
+                      </TouchableOpacity>
+                      <Avatar.Image
+                        size={50}
+                        source={require('../assets/list.png')}
+                      />
+                    </Card.Content>
+                  </Card>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+        )}
       </View>
     </View>
   );

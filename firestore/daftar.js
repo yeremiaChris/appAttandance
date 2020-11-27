@@ -6,10 +6,10 @@ import moment from 'moment';
 const templateLaporan = firestore().collection('laporanDoaPagi');
 // // ini untuk input ke data base laporan yang hadir saja
 export const buatLaporan = (dataArray, dataArray2) => {
-  console.log(dataArray.length);
-  console.log(dataArray2.length);
   templateLaporan
     .add({
+      dataHadir: dataArray2,
+      dataTidakHadir: dataArray,
       totalHadir: dataArray2.length,
       totalTidakHadir: dataArray.length,
       tanggal: moment(new Date()).format('dddd,D MMM yyyy'),

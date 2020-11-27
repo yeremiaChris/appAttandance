@@ -92,6 +92,8 @@ export default function laporan() {
             tanggal: doc.data().tanggal,
             jam: doc.data().jam,
             key: doc.id,
+            dataHadir: doc.data().dataHadir,
+            dataTidakHadir: doc.data().dataTidakHadir,
           };
           list.push(datas);
         });
@@ -100,20 +102,44 @@ export default function laporan() {
     return () => dataLaporan();
   }, []);
 
-  // handleModal Form hadir dan tidak
+  // state menampilkan modal
   const [modal, setModal] = useState(false);
-  // handle button tambah
-  const handleForm = () => {
+
+  // pass data
+  const [hadir, setHadir] = useState([]);
+  const [tidakHadir, setTidakHadir] = useState([]);
+  const [jumlahHadir, setJumlahHadir] = useState(0);
+  const [jumlahTidakHadir, setJumlahTidakHadir] = useState(0);
+  // handleModal Form hadir dan tidak
+  const handleForm = (
+    dataHadir,
+    dataTidakHadir,
+    jumlahHadir,
+    jumlahTidakHadir,
+  ) => {
     setModal(true);
+    setHadir(dataHadir);
+    setTidakHadir(dataTidakHadir);
+    setJumlahHadir(jumlahHadir);
+    setJumlahTidakHadir(jumlahTidakHadir);
   };
 
   // closeModal form hadir tidak
   const closeModal = () => {
     setModal(false);
+    setHadir();
+    setTidakHadir();
   };
   return (
     <View style={styles.viewForCard}>
-      <DaftarHadirDanTidak modal={modal} closeModal={closeModal} />
+      <DaftarHadirDanTidak
+        modal={modal}
+        closeModal={closeModal}
+        hadir={hadir}
+        tidakHadir={tidakHadir}
+        jumlahHadir={jumlahHadir}
+        jumlahTidakHadir={jumlahTidakHadir}
+      />
       <SelectPicker
         title="Pilih laporan"
         items={items}
@@ -140,7 +166,15 @@ export default function laporan() {
         keyExtractor={(item) => item.key}
         renderItem={({item}) => {
           return (
-            <TouchableOpacity onPress={() => handleForm()}>
+            <TouchableOpacity
+              onPress={() =>
+                handleForm(
+                  item.dataHadir,
+                  item.dataTidakHadir,
+                  item.hadir,
+                  item.tidakHadir,
+                )
+              }>
               <View>
                 <Card style={styles.container}>
                   <Card.Content style={styles.card}>

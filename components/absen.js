@@ -92,7 +92,6 @@ export default function Absen({navigation}) {
       });
     return () => yangTidakHadir();
   }, []);
-
   // buat laporan yang hadir saja dan tidak hadir
   const buatL = () => {
     buatLaporan(tidakHadirSaja, hadirSaja);
