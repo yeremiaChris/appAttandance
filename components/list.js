@@ -27,6 +27,7 @@ import {object} from 'yup';
 import ModalDetail from '../shared/modalDetail';
 // firestore
 import firestore from '@react-native-firebase/firestore';
+import {changeCheckAll, deleteSiswa} from '../firestore/daftar';
 
 const initialSiswa = [
   {
@@ -81,19 +82,6 @@ export default function list() {
   //     }),
   //   ]);
   // };
-  const changeCheckAll = () => {
-    firestore()
-      .collection('daftar')
-      .get()
-      .then((querySnabShot) => {
-        querySnabShot.forEach((doc) => {
-          doc.ref.update({
-            check: all,
-          });
-        });
-      });
-    setAll(!all);
-  };
 
   // deleteAllFunction
   const deleteAll = () => {
@@ -112,6 +100,8 @@ export default function list() {
           text: 'Yes',
           onPress: () => {
             console.log(siswa);
+            deleteSiswa();
+            setDisplay(false);
           },
         },
         {
@@ -192,14 +182,14 @@ export default function list() {
               <Checkbox
                 status={all ? 'unchecked' : 'checked'}
                 onPress={() => {
-                  changeCheckAll();
+                  changeCheckAll(all, setAll);
                 }}
               />
               <IconButton
                 icon="delete"
                 color={Colors.grey500}
                 size={20}
-                onPress={deleteAll}
+                onPress={twoOptionAlertHandler}
               />
             </View>
           </>

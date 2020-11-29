@@ -68,4 +68,39 @@ export const tambahSiswa = (nama, angkatan, jurusan) => {
     });
 };
 
-// checkbox siswa
+// checkbox all list siswa
+export const changeCheckAll = (all, setAll) => {
+  firestore()
+    .collection('daftar')
+    .get()
+    .then((querySnabShot) => {
+      querySnabShot.forEach((doc) => {
+        doc.ref.update({
+          check: all,
+        });
+      });
+    });
+  setAll(!all);
+};
+
+// delete siswa
+export const deleteSiswa = () => {
+  firestore()
+    .collection('daftar')
+    .where('check', '==', true)
+    .get()
+    .then((querySnabShot) => {
+      const batch = firestore().batch();
+      querySnabShot.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+      // commit the batch
+      return batch.commit();
+    })
+    .then((res) => {
+      console.log('berhasil delete');
+    })
+    .catch((err) => {
+      console.log('gagal delete');
+    });
+};
