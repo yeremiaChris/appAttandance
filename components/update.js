@@ -13,7 +13,7 @@ import {IconButton, TextInput, Colors} from 'react-native-paper';
 import {Formik} from 'formik';
 import RNPickerSelect from 'react-native-picker-select';
 import * as yup from 'yup';
-
+import {updateDetail} from '../firestore/daftar';
 // angkatan select
 const label = [
   {label: 'Angkatan 2019', value: '2019'},
@@ -37,7 +37,7 @@ const siswaSchema = yup.object({
   angkatan: yup.string().required('Field ini tidak boleh kosong ...'),
   jurusan: yup.string().required('Field ini tidak boleh kosong ...'),
 });
-export default function modal({nama}) {
+export default function modal({nama, ang, jur, kunci, setVisible}) {
   // state modal
   const [modal, setModal] = useState(false);
   // handle button tambah
@@ -58,10 +58,14 @@ export default function modal({nama}) {
   };
   // handleSubmit
   const handleSubmit = (values) => {
-    values.key = Math.random().toString();
-    setSiswa((prevState) => {
-      return [values, ...prevState];
-    });
+    // values.key = Math.random().toString();
+    // setSiswa((prevState) => {
+    //   return [values, ...prevState];
+    // });
+    // console.log(values);
+    // console.log(values);
+    updateDetail(values.kunci, values.angkatan, values.nama, values.jurusan);
+    setVisible(false);
     setModal(false);
   };
   return (
@@ -74,7 +78,12 @@ export default function modal({nama}) {
               <Text style={styles.textHeader}>Update Siswa</Text>
             </View>
             <Formik
-              initialValues={{nama: '', angkatan: '', jurusan: ''}}
+              initialValues={{
+                nama: nama,
+                angkatan: ang,
+                jurusan: jur,
+                kunci: kunci,
+              }}
               validationSchema={siswaSchema}
               onSubmit={handleSubmit}>
               {({

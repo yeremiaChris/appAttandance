@@ -104,3 +104,12 @@ export const deleteSiswa = () => {
       console.log('gagal delete');
     });
 };
+
+// update
+export const updateDetail = (doc, angkatan, nama, jurusan) => {
+  firestore().collection('daftar').doc(doc).update({
+    angkatan,
+    nama,
+    jurusan,
+  });
+};

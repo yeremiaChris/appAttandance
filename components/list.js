@@ -167,6 +167,7 @@ export default function list() {
         hideModal={hideModal}
         containerStyle={containerStyle}
         detail={detail}
+        setVisible={setVisible}
       />
       {/* akhir modal */}
       <SelectPicker

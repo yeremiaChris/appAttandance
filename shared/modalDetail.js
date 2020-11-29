@@ -18,7 +18,9 @@ export default function modalDelete({
   hideModal,
   containerStyle,
   detail,
+  setVisible,
 }) {
+  // console.log(detail);
   return (
     <Portal>
       <Modal visible={visible} onDismiss={hideModal}>
@@ -30,7 +32,13 @@ export default function modalDelete({
               <Paragraph>{detail.angkatan}</Paragraph>
             </View>
             <View>
-              <Update nama={detail.nama} />
+              <Update
+                nama={detail.nama}
+                ang={detail.angkatan}
+                jur={detail.jurusan}
+                kunci={detail.key}
+                setVisible={setVisible}
+              />
             </View>
           </Card.Content>
         </Card>
