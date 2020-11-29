@@ -8,7 +8,6 @@ import absenStack from './absenStack';
 import laporanStack from './laporanStack';
 import daftarStack from './daftarStack';
 import homeStack from './homeStack';
-import daftarYangHadirDanTidak from './daftarYangHadirDanTidak';
 export default function drawerDaftar({route}) {
   return (
     <Drawer.Navigator initialRouteName={route.name}>
@@ -20,7 +19,6 @@ export default function drawerDaftar({route}) {
       <Drawer.Screen name="Daftar" component={bottomBar} />
       <Drawer.Screen name="Absen" component={bottomBar} />
       <Drawer.Screen name="Laporan" component={bottomBar} />
-      <Drawer.Screen name="hadirDanTidak" component={daftarYangHadirDanTidak} />
     </Drawer.Navigator>
   );
 }

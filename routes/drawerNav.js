@@ -5,7 +5,6 @@ import SearchBar from 'react-native-dynamic-search-bar';
 import {StyleSheet} from 'react-native';
 import bottomaBar from './bottomBar';
 import drawerDaftar from './drawerDaftar';
-import daftarYangHadirDanTidak from './daftarYangHadirDanTidak';
 export default function drawerNav() {
   return (
     <Drawer.Navigator initialRouteName="Home">
@@ -17,7 +16,6 @@ export default function drawerNav() {
       <Drawer.Screen name="Daftar" component={drawerDaftar} />
       <Drawer.Screen name="Absen" component={drawerDaftar} />
       <Drawer.Screen name="Laporan" component={drawerDaftar} />
-      <Drawer.Screen name="hadirDanTidak" component={daftarYangHadirDanTidak} />
     </Drawer.Navigator>
   );
 }

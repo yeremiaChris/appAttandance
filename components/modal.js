@@ -13,7 +13,8 @@ import {IconButton, TextInput} from 'react-native-paper';
 import {Formik} from 'formik';
 import RNPickerSelect from 'react-native-picker-select';
 import * as yup from 'yup';
-
+// tambah siswa
+import {tambahSiswa} from '../firestore/daftar';
 // angkatan select
 const label = [
   {label: 'Angkatan 2019', value: '2019'},
@@ -58,10 +59,11 @@ export default function modal({setSiswa}) {
   };
   // handleSubmit
   const handleSubmit = (values) => {
-    values.key = Math.random().toString();
-    setSiswa((prevState) => {
-      return [values, ...prevState];
-    });
+    // values.key = Math.random().toString();
+    tambahSiswa(values.nama, values.angkatan, values.jurusan);
+    // setSiswa((prevState) => {
+    //   return [values, ...prevState];
+    // });
     setModal(false);
   };
   return (

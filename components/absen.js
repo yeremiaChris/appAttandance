@@ -17,14 +17,11 @@ import {
 } from 'react-native-paper';
 import {CheckBox} from 'react-native-elements';
 import SelectPickker from '../shared/SelectPicker';
-import {
-  buatLaporan,
-  handleChangeRadioButton,
-  changeRadio,
-} from '../firestore/daftar';
+import {buatLaporan, changeRadio} from '../firestore/daftar';
 import SelectPicker from '../shared/SelectPicker';
 // firestore
 import firestore from '@react-native-firebase/firestore';
+import {showMessage, hideMessage} from 'react-native-flash-message';
 
 // radio button
 const data = [
@@ -66,7 +63,7 @@ export default function Absen({navigation}) {
   const [hadirSaja, setHadirSaja] = useState([]);
   useEffect(() => {
     const yangHadir = firestore()
-      .collection('doapagi')
+      .collection('daftar')
       .where('kehadiran', '==', 'Hadir')
       .onSnapshot((snabshot) => {
         let list = [];
@@ -81,7 +78,7 @@ export default function Absen({navigation}) {
   const [tidakHadirSaja, setTidakHadirSaja] = useState([]);
   useEffect(() => {
     const yangTidakHadir = firestore()
-      .collection('doapagi')
+      .collection('daftar')
       .where('kehadiran', '==', 'Tidak Hadir')
       .onSnapshot((snabshot) => {
         let list = [];
@@ -211,32 +208,11 @@ export default function Absen({navigation}) {
                               item.nama,
                               item.angkatan,
                               item.check,
-                              hadir,
+                              true,
                               item.jurusan,
-                              item.kehadiran,
+                              'Hadir',
                               false,
                             );
-                            setHadir(!hadir);
-                            if (
-                              item.hadir === true &&
-                              item.tidakHadir === false
-                            ) {
-                              handleChangeRadioButton(
-                                item.key,
-                                item.nama,
-                                item.angkatan,
-                                item.jurusan,
-                                'Tanpa Keterangan',
-                              );
-                            } else {
-                              handleChangeRadioButton(
-                                item.key,
-                                item.nama,
-                                item.angkatan,
-                                item.jurusan,
-                                'Hadir',
-                              );
-                            }
                           }}
                           value="Hadir"
                         />
@@ -257,30 +233,9 @@ export default function Absen({navigation}) {
                               item.check,
                               false,
                               item.jurusan,
-                              item.kehadiran,
-                              tidakHadir,
+                              'Tidak Hadir',
+                              true,
                             );
-                            setTidakHadir(!tidakHadir);
-                            if (
-                              item.hadir === false &&
-                              item.tidakHadir === true
-                            ) {
-                              handleChangeRadioButton(
-                                item.key,
-                                item.nama,
-                                item.angkatan,
-                                item.jurusan,
-                                'Tanpa Keterangan',
-                              );
-                            } else {
-                              handleChangeRadioButton(
-                                item.key,
-                                item.nama,
-                                item.angkatan,
-                                item.jurusan,
-                                'Tidak Hadir',
-                              );
-                            }
                           }}
                           value="Tidak Hadir"
                         />

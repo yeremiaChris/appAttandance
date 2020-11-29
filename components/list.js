@@ -64,20 +64,35 @@ export default function list() {
 
   // chekcbox
   const [checked, setChecked] = React.useState(false);
+
   // display
   const [display, setDisplay] = useState(false);
+
   // checkall
-  const [all, setAll] = useState(false);
-  const updateAll = () => {
-    setSiswa([
-      ...siswa.map((data) => {
-        setAll(!all);
-        return {
-          ...data,
-          check: !all,
-        };
-      }),
-    ]);
+  const [all, setAll] = useState(true);
+  // const updateAll = () => {
+  //   setSiswa([
+  //     ...siswa.map((data) => {
+  //       setAll(!all);
+  //       return {
+  //         ...data,
+  //         check: !all,
+  //       };
+  //     }),
+  //   ]);
+  // };
+  const changeCheckAll = () => {
+    firestore()
+      .collection('daftar')
+      .get()
+      .then((querySnabShot) => {
+        querySnabShot.forEach((doc) => {
+          doc.ref.update({
+            check: all,
+          });
+        });
+      });
+    setAll(!all);
   };
 
   // deleteAllFunction
@@ -129,7 +144,7 @@ export default function list() {
             angkatan: doc.data().angkatan,
             jurusan: doc.data().jurusan,
             key: doc.id,
-            check: false,
+            check: doc.data().check,
             kehadiran: '',
           };
           list.push(datas);
@@ -138,6 +153,22 @@ export default function list() {
       });
     return () => getDaftar();
   }, []);
+
+  // change checkbox
+  const changeCheckBox = (doc, check) => {
+    firestore()
+      .collection('daftar')
+      .doc(doc)
+      .update({
+        check: check,
+      })
+      .then((res) => {
+        console.log('berhasil');
+      })
+      .catch((err) => {
+        console.log('gagal');
+      });
+  };
   return (
     <View style={styles.cardWrapper}>
       {/* modal */}
@@ -159,8 +190,10 @@ export default function list() {
           <>
             <View style={styles.viewDelete}>
               <Checkbox
-                status={all ? 'checked' : 'unchecked'}
-                onPress={updateAll}
+                status={all ? 'unchecked' : 'checked'}
+                onPress={() => {
+                  changeCheckAll();
+                }}
               />
               <IconButton
                 icon="delete"
@@ -187,7 +220,7 @@ export default function list() {
                       <Checkbox
                         status={item.check ? 'checked' : 'unchecked'}
                         onPress={() => {
-                          item.check = checked;
+                          changeCheckBox(item.key, checked);
                           setChecked(!checked);
                         }}
                       />

@@ -6,6 +6,8 @@ import moment from 'moment';
 const templateLaporan = firestore().collection('laporanDoaPagi');
 // // ini untuk input ke data base laporan yang hadir saja
 export const buatLaporan = (dataArray, dataArray2) => {
+  const idLocale = require('moment/locale/id');
+  moment.updateLocale('id', idLocale);
   templateLaporan
     .add({
       dataHadir: dataArray2,
@@ -18,31 +20,6 @@ export const buatLaporan = (dataArray, dataArray2) => {
     })
     .then((res) => console.log('berhasil'))
     .catch((err) => console.log(err));
-};
-
-// handle Ke laporan untuk ngabsen hadir tidaknya
-export const handleChangeRadioButton = (
-  doc,
-  nama,
-  angkatan,
-  jurusan,
-  kehadiran,
-) => {
-  firestore()
-    .collection('doapagi')
-    .doc(doc)
-    .set({
-      nama,
-      angkatan,
-      jurusan,
-      kehadiran,
-    })
-    .then(() => {
-      console.log('berhasil');
-    })
-    .catch(() => {
-      console.log('error');
-    });
 };
 // ini untuk mengatur toggle pada radio button
 export const changeRadio = (
@@ -70,3 +47,25 @@ export const changeRadio = (
     .then((res) => console.log('res'))
     .catch((err) => console.log('kereen'));
 };
+
+// tambah data
+export const tambahSiswa = (nama, angkatan, jurusan) => {
+  firestore()
+    .collection('daftar')
+    .add({
+      nama,
+      angkatan,
+      jurusan,
+      hadir: true,
+      tidakHadir: false,
+      tanggal: new Date().toDateString(),
+    })
+    .then((res) => {
+      console.log('berhasil');
+    })
+    .catch((err) => {
+      console.log('gagal');
+    });
+};
+
+// checkbox siswa
