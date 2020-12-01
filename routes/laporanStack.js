@@ -6,7 +6,6 @@ import Header from '../shared/Header';
 import SearchBar from 'react-native-dynamic-search-bar';
 import {StyleSheet, View} from 'react-native';
 import {IconButton, Colors} from 'react-native-paper';
-
 export default function homeStack({navigation}) {
   const handleMenu = () => {
     navigation.openDrawer();
@@ -32,7 +31,7 @@ export default function homeStack({navigation}) {
                   onChangeText={(text) => {
                     console.log(text);
                   }}
-                  onPress={() => alert('onPress')}
+                  onPress={() => console.log('search')}
                 />
               </View>
             </>

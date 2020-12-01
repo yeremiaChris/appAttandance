@@ -27,7 +27,9 @@ import {object} from 'yup';
 import ModalDetail from '../shared/modalDetail';
 // firestore
 import firestore from '@react-native-firebase/firestore';
-import {changeCheckAll, deleteSiswa} from '../firestore/daftar';
+import {changeCheckAll, deleteSiswa, dataAngkatan} from '../firestore/daftar';
+import SnackBar from '../shared/snackBar';
+import ProgressBar from '../shared/progressBar';
 
 const initialSiswa = [
   {
@@ -60,6 +62,7 @@ export default function list() {
 
   const [detail, setDetail] = useState(initialDetail);
   // akhir ModalDetail
+
   // get key for delete
   const [key, setKey] = useState('');
 
@@ -99,7 +102,6 @@ export default function list() {
         {
           text: 'Yes',
           onPress: () => {
-            console.log(siswa);
             deleteSiswa();
             setDisplay(false);
           },
@@ -115,33 +117,44 @@ export default function list() {
     );
   };
 
-  // state
+  // state select picker
   const [items, setItems] = useState(label);
   const [nilai, setNilai] = useState({
     tangkapValue: null,
   });
 
+  // progress bar
+  const [progress, setProgress] = useState(true);
+  const [durasi, setDurasi] = useState(1);
   // get data from firestore
   const [siswa, setSiswa] = useState([]);
   useEffect(() => {
     const getDaftar = firestore()
       .collection('daftar')
+      .orderBy('tanggal', 'desc')
       .onSnapshot(function (snabshot) {
-        let list = [];
-        snabshot.forEach((doc) => {
-          const datas = {
-            nama: doc.data().nama,
-            angkatan: doc.data().angkatan,
-            jurusan: doc.data().jurusan,
-            key: doc.id,
-            check: doc.data().check,
-            kehadiran: '',
-          };
-          list.push(datas);
-        });
-        setSiswa(list);
+        if (snabshot.empty) {
+          setProgress(false);
+        } else {
+          setProgress(false);
+          let list = [];
+          snabshot.forEach((doc) => {
+            const datas = {
+              nama: doc.data().nama,
+              angkatan: doc.data().angkatan,
+              jurusan: doc.data().jurusan,
+              key: doc.id,
+              check: doc.data().check,
+              kehadiran: '',
+            };
+            list.push(datas);
+          });
+          setSiswa(list);
+        }
       });
-    return () => getDaftar();
+    return () => {
+      getDaftar();
+    };
   }, []);
 
   // change checkbox
@@ -153,12 +166,24 @@ export default function list() {
         check: check,
       })
       .then((res) => {
-        console.log('berhasil');
+        return;
       })
       .catch((err) => {
-        console.log('gagal');
+        return;
       });
   };
+
+  // snackbar
+  const [visible2, setVisible2] = React.useState(false);
+
+  const onToggleSnackBar = () => setVisible2(true);
+
+  const onDismissSnackBar = () => setVisible(false);
+  const [title, setTitle] = useState('Doa Pagi');
+  const changeTitle = (newTitle) => {
+    setTitle(newTitle);
+  };
+
   return (
     <View style={styles.cardWrapper}>
       {/* modal */}
@@ -170,11 +195,22 @@ export default function list() {
         setVisible={setVisible}
       />
       {/* akhir modal */}
+      <ProgressBar progress={progress} durasi={durasi} />
+
       <SelectPicker
         title="Pilih Angkatan"
         items={items}
         nilai={nilai}
         setNilai={setNilai}
+        data={dataAngkatan}
+        setSiswa={setSiswa}
+        setProgress={setProgress}
+        changeTitle={changeTitle}
+      />
+      <SnackBar
+        onDismissSnackBar={onDismissSnackBar}
+        visible={visible2}
+        setVisible2={setVisible2}
       />
       <View style={styles.containerdua}>
         {display ? (
@@ -195,6 +231,7 @@ export default function list() {
             </View>
           </>
         ) : null}
+
         <FlatList
           data={siswa}
           keyExtractor={(item) => item.key}
@@ -245,7 +282,11 @@ export default function list() {
           )}
         />
 
-        <ModalForm setSiswa={setSiswa} />
+        <ModalForm
+          setSiswa={setSiswa}
+          onToggleSnackBar={onToggleSnackBar}
+          setVisible2={setVisible2}
+        />
       </View>
     </View>
   );

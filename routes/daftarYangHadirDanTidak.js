@@ -39,15 +39,6 @@ export default function daftarYangHadirDanTidak({
             />
           )}
         </Tab.Screen>
-        {/* <Tab.Screen name="Tanpa Keterangan">
-          {(props) => (
-            <HadirDanTidak
-              {...props}
-              kehadiran={tidakHadir}
-              jumlah={jumlahTidakHadir}
-            />
-          )}
-        </Tab.Screen> */}
       </Tab.Navigator>
     </Modal>
   );

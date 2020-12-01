@@ -38,14 +38,7 @@ const siswaSchema = yup.object({
   angkatan: yup.string().required('Field ini tidak boleh kosong ...'),
   jurusan: yup.string().required('Field ini tidak boleh kosong ...'),
 });
-export default function modal({setSiswa}) {
-  // state modal
-  const [modal, setModal] = useState(false);
-  // handle button tambah
-  const handleForm = () => {
-    setModal(true);
-  };
-  // close modal
+export default function modal({setSiswa, onToggleSnackBar, setVisible2}) {
   const closeModal = () => {
     setModal(false);
   };
@@ -60,12 +53,21 @@ export default function modal({setSiswa}) {
   // handleSubmit
   const handleSubmit = (values) => {
     // values.key = Math.random().toString();
-    tambahSiswa(values.nama, values.angkatan, values.jurusan);
+    tambahSiswa(values.nama, values.angkatan, values.jurusan, setVisible2);
+    onToggleSnackBar();
     // setSiswa((prevState) => {
     //   return [values, ...prevState];
     // });
     setModal(false);
   };
+
+  // state modal
+  const [modal, setModal] = useState(false);
+  // handle button tambah
+  const handleForm = () => {
+    setModal(true);
+  };
+  // close mod
   return (
     <View style={styles.container}>
       <Modal animationType="slide" visible={modal}>
@@ -125,7 +127,9 @@ export default function modal({setSiswa}) {
                       icon="send"
                       size={30}
                       color="purple"
-                      onPress={handleSubmit}
+                      onPress={() => {
+                        handleSubmit();
+                      }}
                     />
                   </View>
                 </View>

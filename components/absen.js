@@ -17,11 +17,13 @@ import {
 } from 'react-native-paper';
 import {CheckBox} from 'react-native-elements';
 import SelectPickker from '../shared/SelectPicker';
-import {buatLaporan, changeRadio} from '../firestore/daftar';
+import {buatLaporan, buatLaporanMinggu} from '../firestore/daftar';
 import SelectPicker from '../shared/SelectPicker';
 // firestore
 import firestore from '@react-native-firebase/firestore';
 import {showMessage, hideMessage} from 'react-native-flash-message';
+
+import ProgressBar from '../shared/progressBar';
 
 // radio button
 const data = [
@@ -34,8 +36,8 @@ const data = [
 ];
 // label select
 const label = [
-  {label: 'Doa Pagi', value: 'Doa Pagi'},
-  {label: 'Ibadah Minggu', value: 'Ibadah Minggu'},
+  {label: 'Doa Pagi', value: true},
+  {label: 'Ibadah Minggu', value: false},
 ];
 const brg = [
   {id: 0, label: 'Button1'},
@@ -59,64 +61,95 @@ export default function Absen({navigation}) {
   // pilihan dari select
   const handlePilih = () => console.log('test');
 
-  // mensortir yang hadir saja
-  const [hadirSaja, setHadirSaja] = useState([]);
-  useEffect(() => {
-    const yangHadir = firestore()
-      .collection('daftar')
-      .where('kehadiran', '==', 'Hadir')
-      .onSnapshot((snabshot) => {
-        let list = [];
-        snabshot.forEach((doc) => {
-          list.push(doc.data());
-        });
-        setHadirSaja(list);
-      });
-  }, []);
+  // progress
+  const [progress, setProgress] = useState(true);
+  const [durasi, setDurasi] = useState(1);
+
+  // state doapagi
+  const [doaPagi, setDoaPagi] = useState([]);
 
   // daftar yang tidak hadir saja
   const [tidakHadirSaja, setTidakHadirSaja] = useState([]);
+
+  // mensortir yang hadir saja
+  const [hadirSaja, setHadirSaja] = useState([]);
+
+  // getData doa pagi
   useEffect(() => {
-    const yangTidakHadir = firestore()
-      .collection('daftar')
+    const daftarTmp = firestore().collection('daftar');
+    const data = daftarTmp
+      .orderBy('tanggal', 'desc')
+      .onSnapshot(function (snabshot) {
+        let list = [];
+        snabshot.forEach((doc) => {
+          if (doc.exists) {
+            const datas = {
+              nama: doc.data().nama,
+              angkatan: doc.data().angkatan,
+              jurusan: doc.data().jurusan,
+              key: doc.id,
+              hadir: doc.data().hadir,
+              tidakHadir: doc.data().tidakHadir,
+            };
+            list.push(datas);
+          } else {
+            return;
+          }
+        });
+        setDoaPagi(list);
+        setProgress(false);
+      });
+    return () => data();
+  }, []);
+  // getData doa pagi
+  useEffect(() => {
+    const daftarTmp = firestore().collection('daftar');
+    const data = daftarTmp
       .where('kehadiran', '==', 'Tidak Hadir')
       .onSnapshot((snabshot) => {
         let list = [];
         snabshot.forEach((doc) => {
-          list.push(doc.data());
+          const data = {
+            nama: doc.data().nama,
+            angkatan: doc.data().angkatan,
+            tanggal: doc.data().tanggal,
+            jurusan: doc.data().jurusan,
+          };
+          list.push(data);
         });
         setTidakHadirSaja(list);
       });
-    return () => yangTidakHadir();
+    return () => data();
   }, []);
+
+  useEffect(() => {
+    const daftarTmp = firestore().collection('daftar');
+    const data = daftarTmp
+      .where('kehadiran', '==', 'Hadir')
+      .onSnapshot((snabshot) => {
+        let list = [];
+        snabshot.forEach((doc) => {
+          const data = {
+            nama: doc.data().nama,
+            angkatan: doc.data().angkatan,
+            tanggal: doc.data().tanggal,
+            jurusan: doc.data().jurusan,
+          };
+          list.push(data);
+        });
+        setHadirSaja(list);
+      });
+    return () => data();
+  }, []);
+
   // buat laporan yang hadir saja dan tidak hadir
+  const [buat, setBuat] = useState(true);
   const buatL = () => {
     buatLaporan(tidakHadirSaja, hadirSaja);
   };
-
-  // state doapagi
-  const [doaPagi, setDoaPagi] = useState([]);
-  // getData doa pagi
-  useEffect(() => {
-    const getDoaPagi = firestore()
-      .collection('daftar')
-      .onSnapshot(function (snabshot) {
-        let list = [];
-        snabshot.forEach((doc) => {
-          const datas = {
-            nama: doc.data().nama,
-            angkatan: doc.data().angkatan,
-            jurusan: doc.data().jurusan,
-            key: doc.id,
-            hadir: doc.data().hadir,
-            tidakHadir: doc.data().tidakHadir,
-          };
-          list.push(datas);
-        });
-        setDoaPagi(list);
-      });
-    return () => getDoaPagi();
-  }, []);
+  const buatM = () => {
+    buatLaporanMinggu(tidakHadirSaja, hadirSaja);
+  };
 
   // mengelola absen doa pagi
   const sett = (doc, angkatan, nama, doapagi, jurusan) => {
@@ -135,14 +168,17 @@ export default function Absen({navigation}) {
         {
           text: 'Ya',
           onPress: () => {
-            console.log('masuk ke laporan');
-            buatL();
-            navigation.navigate('Laporan');
+            if (buat == true || buat == null) {
+              buatL();
+              navigation.navigate('Laporan');
+            } else {
+              buatM();
+              navigation.navigate('Laporan');
+            }
           },
         },
         {
           text: 'Tidak',
-          onPress: () => console.log('test'),
           style: 'cancel',
         },
       ],
@@ -154,8 +190,32 @@ export default function Absen({navigation}) {
   // key;
   const [hadir, setHadir] = useState(false);
   const [tidakHadir, setTidakHadir] = useState(false);
+
+  // select
+  const dataSelect = (tests, test, val) => {
+    setBuat(val);
+  };
+
+  const changeRadio = (doc, hadir, kehadiran, tidakHadir) => {
+    firestore()
+      .collection('daftar')
+      .doc(doc)
+      .update({
+        hadir,
+        kehadiran,
+        tidakHadir,
+      })
+      .then((res) => {
+        return;
+      })
+      .catch((err) => {
+        return;
+      });
+  };
   return (
     <View style={styles.viewForCard}>
+      <ProgressBar progress={progress} durasi={durasi} />
+
       <SelectPickker
         title="Pilih Absen"
         items={items}
@@ -163,8 +223,10 @@ export default function Absen({navigation}) {
         setNilai={setNilai}
         changeTitle={changeTitle}
         handlePilih={handlePilih}
+        setSiswa={setTitle}
         valueLabel="Doa Pagi"
         handlePilihPagi={handlePilih}
+        data={dataSelect}
       />
       <View>
         <Card style={styles.container}>
@@ -203,16 +265,7 @@ export default function Absen({navigation}) {
                               : 'unchecked'
                           }
                           onPress={() => {
-                            changeRadio(
-                              item.key,
-                              item.nama,
-                              item.angkatan,
-                              item.check,
-                              true,
-                              item.jurusan,
-                              'Hadir',
-                              false,
-                            );
+                            changeRadio(item.key, true, 'Hadir', false);
                           }}
                           value="Hadir"
                         />
@@ -226,16 +279,7 @@ export default function Absen({navigation}) {
                               : 'unchecked'
                           }
                           onPress={() => {
-                            changeRadio(
-                              item.key,
-                              item.nama,
-                              item.angkatan,
-                              item.check,
-                              false,
-                              item.jurusan,
-                              'Tidak Hadir',
-                              true,
-                            );
+                            changeRadio(item.key, false, 'Tidak Hadir', true);
                           }}
                           value="Tidak Hadir"
                         />

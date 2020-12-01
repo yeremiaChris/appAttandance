@@ -17,7 +17,7 @@ export default function homeStack({navigation}) {
         name="Daftar"
         component={list}
         options={{
-          headerTitle: () => (
+          headerTitle: (log) => (
             <>
               <View style={styles.header}>
                 <IconButton
@@ -32,7 +32,6 @@ export default function homeStack({navigation}) {
                   onChangeText={(text) => {
                     console.log(text);
                   }}
-                  onPress={() => alert('onPress')}
                 />
               </View>
             </>

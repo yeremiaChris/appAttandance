@@ -5,9 +5,9 @@ import moment from 'moment';
 
 const templateLaporan = firestore().collection('laporanDoaPagi');
 // // ini untuk input ke data base laporan yang hadir saja
+const idLocale = require('moment/locale/id');
+moment.updateLocale('id', idLocale);
 export const buatLaporan = (dataArray, dataArray2) => {
-  const idLocale = require('moment/locale/id');
-  moment.updateLocale('id', idLocale);
   templateLaporan
     .add({
       dataHadir: dataArray2,
@@ -16,55 +16,73 @@ export const buatLaporan = (dataArray, dataArray2) => {
       totalTidakHadir: dataArray.length,
       tanggal: moment(new Date()).format('dddd,D MMM yyyy'),
       jam: moment(new Date()).format('HH:mm'),
-      waktu: moment(new Date()).format('llll'),
+      waktu: new Date().toString(),
     })
     .then((res) => console.log('berhasil'))
+    .catch((err) => console.log('err'));
+};
+// // ini untuk input ke data base laporan yang hadir saja
+export const buatLaporanMinggu = (dataArray, dataArray2) => {
+  const idLocale = require('moment/locale/id');
+  moment.updateLocale('id', idLocale);
+  firestore()
+    .collection('laporanIbadahMinggu')
+    .add({
+      dataHadir: dataArray2,
+      dataTidakHadir: dataArray,
+      totalHadir: dataArray2.length,
+      totalTidakHadir: dataArray.length,
+      tanggal: moment(new Date()).format('dddd,D MMM yyyy'),
+      jam: moment(new Date()).format('HH:mm'),
+      waktu: new Date().toString(),
+    })
+    .then((res) => console.log(res))
     .catch((err) => console.log(err));
 };
+
 // ini untuk mengatur toggle pada radio button
-export const changeRadio = (
-  doc,
-  nama,
-  angkatan,
-  check,
-  hadir,
-  jurusan,
-  kehadiran,
-  tidakHadir,
-) => {
-  return firestore()
-    .collection('daftar')
-    .doc(doc)
-    .set({
-      nama,
-      angkatan,
-      check,
-      hadir,
-      jurusan,
-      kehadiran,
-      tidakHadir,
-    })
-    .then((res) => console.log('res'))
-    .catch((err) => console.log('kereen'));
+export const changeRadio = (doc, hadir, kehadiran, tidakHadir, navigation) => {
+  const unsubcribe = navigation.addListener('focus', () => {
+    firestore()
+      .collection('daftar')
+      .doc(doc)
+      .update({
+        hadir,
+        kehadiran,
+        tidakHadir,
+      })
+      .then((res) => {
+        return;
+      })
+      .catch((err) => {
+        return;
+      });
+  });
+
+  return () => unsubcribe;
 };
 
 // tambah data
-export const tambahSiswa = (nama, angkatan, jurusan) => {
+export const tambahSiswa = (nama, angkatan, jurusan, set) => {
   firestore()
     .collection('daftar')
     .add({
       nama,
       angkatan,
       jurusan,
+      kehadiran: 'Hadir',
+      check: false,
       hadir: true,
       tidakHadir: false,
-      tanggal: new Date().toDateString(),
+      tanggal: new Date().toString(),
     })
     .then((res) => {
-      console.log('berhasil');
+      setInterval(() => {
+        set(false);
+      }, 3000);
     })
     .catch((err) => {
-      console.log('gagal');
+      set(false);
     });
 };
 
@@ -111,5 +129,29 @@ export const updateDetail = (doc, angkatan, nama, jurusan) => {
     angkatan,
     nama,
     jurusan,
+    tanggal: new Date().toString(),
   });
+};
+
+// orderby angkatan
+export const dataAngkatan = (setSiswa, setProgress, angkatan) => {
+  firestore()
+    .collection('daftar')
+    .where('angkatan', '==', angkatan)
+    .onSnapshot(function (snabshot) {
+      let list = [];
+      snabshot.forEach((doc) => {
+        const datas = {
+          nama: doc.data().nama,
+          angkatan: doc.data().angkatan,
+          jurusan: doc.data().jurusan,
+          key: doc.id,
+          check: doc.data().check,
+          kehadiran: '',
+        };
+        list.push(datas);
+      });
+      setSiswa(list);
+      setProgress(false);
+    });
 };

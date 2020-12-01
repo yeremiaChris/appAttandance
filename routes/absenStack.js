@@ -59,7 +59,7 @@ export default function homeStack({navigation}) {
                   onChangeText={(text) => {
                     console.log(text);
                   }}
-                  onPress={() => alert('onPress')}
+                  onPress={() => console.log('searc')}
                 />
               </View>
             </>

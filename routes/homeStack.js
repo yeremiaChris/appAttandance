@@ -34,7 +34,7 @@ export default function homeStack() {
               onChangeText={(text) => {
                 console.log(text);
               }}
-              onPress={() => alert('onPress')}
+              onPress={() => console.log('search')}
             />
           ),
         }}
@@ -50,7 +50,7 @@ export default function homeStack() {
               onChangeText={(text) => {
                 console.log(text);
               }}
-              onPress={() => alert('onPress')}
+              onPress={() => console.log('search')}
             />
           ),
         }}

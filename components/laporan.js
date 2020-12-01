@@ -15,10 +15,13 @@ import firestore from '@react-native-firebase/firestore';
 import moment from 'moment';
 // modal daftar hadir dan tidak
 import DaftarHadirDanTidak from '../routes/daftarYangHadirDanTidak';
+import SnackBar from '../shared/snackBar';
+import ProgressBar from '../shared/progressBar';
+
 // label select
 const label = [
-  {label: 'Doa Pagi', value: 'Doa Pagi'},
-  {label: 'Ibadah Minggu', value: 'Ibadah Minggu'},
+  {label: 'Doa Pagi', value: true},
+  {label: 'Ibadah Minggu', value: false},
 ];
 // inital doa pagi
 const DoaPagi = [
@@ -54,7 +57,7 @@ const IbadahMinggu = [
     key: '2',
   },
 ];
-export default function laporan() {
+export default function laporan({visible2, onDismissSnackBar, setVisible2}) {
   // state select
   const [items, setItems] = useState(label);
   const [nilai, setNilai] = useState({
@@ -78,11 +81,23 @@ export default function laporan() {
     setTitle(newTitle);
   };
 
+  // progress bar
+  const [progress, setProgress] = useState(true);
+  const [durasi, setDurasi] = useState(1);
+
   // data laporan yang hadir
   const [listLaporan, setListLaporan] = useState([]);
+
+  const [dataLapors, setDataLapor] = useState(true);
+  const [dataLaporFix, setDataLaporFix] = useState('laporanDoaPagi');
   useEffect(() => {
+    if (dataLapors == true) {
+      setDataLaporFix('laporanIbadahMinggu');
+    } else if (dataLapors == false || null) {
+      setDataLaporFix('laporanDoaPagi');
+    }
     const dataLaporan = firestore()
-      .collection('laporanDoaPagi')
+      .collection(dataLaporFix)
       .orderBy('waktu', 'desc')
       .onSnapshot(function (snabshot) {
         let list = [];
@@ -99,9 +114,10 @@ export default function laporan() {
           list.push(datas);
         });
         setListLaporan(list);
+        setProgress(false);
       });
-    return () => dataLaporan();
-  }, []);
+    return () => dataLaporan;
+  }, [dataLapors]);
 
   // state menampilkan modal
   const [modal, setModal] = useState(false);
@@ -131,6 +147,11 @@ export default function laporan() {
     setHadir();
     setTidakHadir();
   };
+  const laporSet = (test, tests, val) => {
+    setDataLapor(val);
+  };
+
+  const [siswa, setSiswa] = useState('');
   return (
     <View style={styles.viewForCard}>
       <DaftarHadirDanTidak
@@ -141,6 +162,8 @@ export default function laporan() {
         jumlahHadir={jumlahHadir}
         jumlahTidakHadir={jumlahTidakHadir}
       />
+      <ProgressBar progress={progress} durasi={durasi} />
+
       <SelectPicker
         title="Pilih laporan"
         items={items}
@@ -150,6 +173,14 @@ export default function laporan() {
         handlePilih={handlePilihMinggu}
         handlePilihPagi={handlePilihPagi}
         valueLabel="DoaPagi"
+        data={laporSet}
+        setSiswa={setSiswa}
+        setProgress={setProgress}
+      />
+      <SnackBar
+        onDismissSnackBar={onDismissSnackBar}
+        visible={visible2}
+        setVisible2={setVisible2}
       />
       <View>
         <Card style={styles.container}>
@@ -180,7 +211,7 @@ export default function laporan() {
                 <Card style={styles.container}>
                   <Card.Content style={styles.card}>
                     <View>
-                      <Title>Doa Pagi</Title>
+                      <Title>{title}</Title>
                       <Paragraph>{item.tanggal}</Paragraph>
                       <Paragraph>pukul {item.jam} </Paragraph>
                     </View>
