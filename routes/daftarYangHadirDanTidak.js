@@ -12,11 +12,13 @@ export default function daftarYangHadirDanTidak({
   tidakHadir,
   jumlahHadir,
   jumlahTidakHadir,
+  button,
 }) {
   return (
     <Modal animationType="slide" visible={modal}>
       <View style={styles.header}>
         <IconButton
+          disabled={button}
           icon="arrow-left"
           size={25}
           onPress={closeModal}
@@ -27,13 +29,19 @@ export default function daftarYangHadirDanTidak({
       <Tab.Navigator>
         <Tab.Screen name="Hadir">
           {(props) => (
-            <HadirDanTidak {...props} kehadiran={hadir} jumlah={jumlahHadir} />
+            <HadirDanTidak
+              {...props}
+              kehadiran={hadir}
+              jumlah={jumlahHadir}
+              button={button}
+            />
           )}
         </Tab.Screen>
         <Tab.Screen name="Tidak Hadir">
           {(props) => (
             <HadirDanTidak
               {...props}
+              button={button}
               kehadiran={tidakHadir}
               jumlah={jumlahTidakHadir}
             />

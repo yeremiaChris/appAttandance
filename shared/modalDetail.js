@@ -19,6 +19,7 @@ export default function modalDelete({
   containerStyle,
   detail,
   setVisible,
+  button,
 }) {
   // console.log(detail);
   return (
@@ -33,6 +34,7 @@ export default function modalDelete({
             </View>
             <View>
               <Update
+                button={button}
                 nama={detail.nama}
                 ang={detail.angkatan}
                 jur={detail.jurusan}

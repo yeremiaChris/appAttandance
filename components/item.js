@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {Card, Title, Paragraph, Surface} from 'react-native-paper';
 import {
   StyleSheet,
@@ -12,6 +12,7 @@ import {BottomNavigation} from 'react-native-paper';
 // firestore
 import firestore from '@react-native-firebase/firestore';
 import DaftarHadirDanTidak from '../routes/daftarYangHadirDanTidak';
+import {BaseRouter} from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   cardWrapper: {
@@ -63,6 +64,8 @@ const styles = StyleSheet.create({
 });
 
 export default function item({props, doaPagi, progress, setProgress}) {
+  const [button, setButton] = useState(true);
+  console.log(props);
   // data laporan yang hadir
   const [listLaporan, setListLaporan] = useState([]);
   const [minggu, setMinggu] = useState([]);
@@ -86,6 +89,7 @@ export default function item({props, doaPagi, progress, setProgress}) {
           list.push(datas);
         });
         setListLaporan(list);
+        setButton(false);
       });
     const dataLaporanMinggu = firestore()
       .collection('laporanIbadahMinggu')
@@ -106,6 +110,7 @@ export default function item({props, doaPagi, progress, setProgress}) {
           list.push(datas);
         });
         setMinggu(list);
+        setButton(false);
       });
     return () => {
       dataLaporan;
@@ -143,18 +148,12 @@ export default function item({props, doaPagi, progress, setProgress}) {
 
   // handleTouchKeDaftar Siswa
   const handleTouch = () => {
-    props.navigation.navigate('Daftar', {listLaporan});
+    props.navigation.navigate('Daftar');
   };
 
   // handle ke absen doapagi
   const handleDoapagi = () => {
-    props.navigation.navigate('Absen', {
-      doaPagi: doaPagi,
-      progress: progress,
-    });
-    // setInterval(() => {
-    //   setProgress(false);
-    // }, 3000);
+    props.navigation.navigate('Absen');
   };
 
   // handle ke laporan
@@ -173,7 +172,7 @@ export default function item({props, doaPagi, progress, setProgress}) {
           jumlahHadir={jumlahHadir}
           jumlahTidakHadir={jumlahTidakHadir}
         />
-        <TouchableOpacity onPress={handleTouch}>
+        <TouchableOpacity onPress={handleTouch} disabled={button}>
           <Card style={styles.cardContent}>
             <View style={styles.groub}>
               <Image source={require('../assets/list.png')} />
@@ -181,7 +180,7 @@ export default function item({props, doaPagi, progress, setProgress}) {
             </View>
           </Card>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleDoapagi}>
+        <TouchableOpacity onPress={handleDoapagi} disabled={button}>
           <Card style={styles.cardContent}>
             <View style={styles.groub}>
               <Image source={require('../assets/absen.png')} />
@@ -189,7 +188,7 @@ export default function item({props, doaPagi, progress, setProgress}) {
             </View>
           </Card>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleLaporan}>
+        <TouchableOpacity onPress={handleLaporan} disabled={button}>
           <Card style={styles.cardContent}>
             <View style={styles.groub}>
               <Image source={require('../assets/report.png')} />
@@ -217,6 +216,7 @@ export default function item({props, doaPagi, progress, setProgress}) {
           renderItem={({item}) => {
             return (
               <TouchableOpacity
+                disabled={button}
                 onPress={() =>
                   handleForm(
                     item.dataHadir,
@@ -253,11 +253,13 @@ export default function item({props, doaPagi, progress, setProgress}) {
           }}
         />
         <FlatList
+          disabled={button}
           data={minggu}
           keyExtractor={(item) => item.key}
           renderItem={({item}) => {
             return (
               <TouchableOpacity
+                disabled={button}
                 onPress={() =>
                   handleForm(
                     item.dataHadir,

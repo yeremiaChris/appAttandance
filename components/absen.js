@@ -47,6 +47,9 @@ const brg = [
   {id: 3, label: 'Button4'},
 ];
 export default function Absen({navigation}) {
+  // disabled button
+  const [button, setButton] = useState(true);
+
   // mengelola pilihan absen pada select picker
   const [items, setItems] = useState(label);
   const [nilai, setNilai] = useState({
@@ -102,6 +105,7 @@ export default function Absen({navigation}) {
         setDoaPagi(list);
         setFilteredDataSource(list);
         setProgress(false);
+        setButton(false);
       });
     return data;
   }, []);
@@ -123,6 +127,7 @@ export default function Absen({navigation}) {
           list.push(data);
         });
         setTidakHadirSaja(list);
+        setButton(false);
       });
     return data;
   }, []);
@@ -143,6 +148,7 @@ export default function Absen({navigation}) {
           list.push(data);
         });
         setHadirSaja(list);
+        setButton(false);
       });
     return data;
   }, []);
@@ -211,22 +217,24 @@ export default function Absen({navigation}) {
         tidakHadir,
       })
       .then((res) => {
-        return;
+        setButton(false);
       })
       .catch((err) => {
-        return;
+        setButton(true);
       });
   };
 
   // goback
   const backGo = () => {
     navigation.goBack();
+    setButton(false);
   };
 
   return (
     <>
       <View style={styles.searchWrap}>
         <Search
+          button={button}
           handle={backGo}
           data={doaPagi}
           setFilteredDataSource={setFilteredDataSource}
@@ -236,6 +244,7 @@ export default function Absen({navigation}) {
         <ProgressBar progress={progress} durasi={durasi} />
 
         <SelectPickker
+          button={button}
           title="Pilih Absen"
           items={items}
           nilai={nilai}
@@ -250,7 +259,7 @@ export default function Absen({navigation}) {
         <View>
           <Card style={styles.container}>
             <Card.Content style={styles.card}>
-              <TouchableOpacity>
+              <TouchableOpacity disabled={button}>
                 <View>
                   <Title>{title}</Title>
                 </View>
@@ -259,13 +268,14 @@ export default function Absen({navigation}) {
           </Card>
         </View>
         <FlatList
+          disabled={button}
           data={filteredDataSource}
           keyExtractor={(item) => item.key}
           renderItem={({item}) => (
             <View>
               <Card style={styles.container}>
                 <Card.Content style={styles.card}>
-                  <TouchableOpacity>
+                  <TouchableOpacity disabled={button}>
                     <View>
                       <Title>{item.nama}</Title>
                       <Paragraph>
@@ -278,6 +288,7 @@ export default function Absen({navigation}) {
                         <View style={styles.radioChild}>
                           <Text>Hadir</Text>
                           <RadioButton
+                            disabled={button}
                             status={
                               item.hadir === true && item.tidakHadir === false
                                 ? 'checked'
@@ -292,6 +303,7 @@ export default function Absen({navigation}) {
                         <View style={styles.radioChild}>
                           <Text>Tiidak Hadir</Text>
                           <RadioButton
+                            disabled={button}
                             status={
                               item.hadir == false && item.tidakHadir == true
                                 ? 'checked'
@@ -318,6 +330,7 @@ export default function Absen({navigation}) {
           )}
         />
         <FAB
+          disabled={button}
           style={styles.fab}
           medium
           icon="send"

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   Card,
   Title,
@@ -31,6 +31,7 @@ import {changeCheckAll, deleteSiswa, dataAngkatan} from '../firestore/daftar';
 import SnackBar from '../shared/snackBar';
 import ProgressBar from '../shared/progressBar';
 import Search from '../shared/search';
+import {log} from 'react-native-reanimated';
 const initialSiswa = [
   {
     nama: '',
@@ -53,7 +54,10 @@ const label = [
   {label: 'Angkatan 2018', value: '2018'},
   {label: 'Angkatan 2017', value: '2017'},
 ];
-export default function list({navigation}) {
+export default function list({navigation, selectedLocation}) {
+  // disbale button
+  const [button, setButton] = useState(true);
+
   // modalDetail
   const [visible, setVisible] = useState(false);
   const showModal = () => setVisible(true);
@@ -134,7 +138,7 @@ export default function list({navigation}) {
   useEffect(() => {
     const getDaftar = firestore()
       .collection('daftar')
-      .orderBy('tanggal', 'asc')
+      .orderBy('tanggal', 'desc')
       .onSnapshot(function (snabshot) {
         if (snabshot.empty) {
           setProgress(false);
@@ -154,13 +158,13 @@ export default function list({navigation}) {
           });
           setSiswa(list);
           setFilteredDataSource(list);
+          setButton(false);
         }
       });
     return () => {
       getDaftar();
     };
   }, []);
-
   // change checkbox
   const changeCheckBox = (doc, check) => {
     firestore()
@@ -170,10 +174,10 @@ export default function list({navigation}) {
         check: check,
       })
       .then((res) => {
-        return;
+        setButton(false);
       })
       .catch((err) => {
-        return;
+        setButton(true);
       });
   };
 
@@ -191,12 +195,13 @@ export default function list({navigation}) {
   // goback
   const backGo = () => {
     navigation.goBack();
+    setButton(false);
   };
-
   return (
     <>
       <View style={styles.searchWrap}>
         <Search
+          button={button}
           handle={backGo}
           data={siswa}
           set={setSiswa}
@@ -205,6 +210,7 @@ export default function list({navigation}) {
       </View>
       <View style={styles.cardWrapper}>
         <ModalDetail
+          button={button}
           visible={visible}
           hideModal={hideModal}
           containerStyle={containerStyle}
@@ -214,6 +220,7 @@ export default function list({navigation}) {
         {/* akhir modal */}
         <ProgressBar progress={progress} durasi={durasi} />
         <SelectPicker
+          button={button}
           title="Pilih Angkatan"
           items={items}
           nilai={nilai}
@@ -233,12 +240,14 @@ export default function list({navigation}) {
             <>
               <View style={styles.viewDelete}>
                 <Checkbox
+                  disabled={button}
                   status={all ? 'unchecked' : 'checked'}
                   onPress={() => {
                     changeCheckAll(all, setAll);
                   }}
                 />
                 <IconButton
+                  disabled={button}
                   icon="delete"
                   color={Colors.grey500}
                   size={20}
@@ -249,10 +258,12 @@ export default function list({navigation}) {
           ) : null}
 
           <FlatList
-            data={filteredDataSource}
+            disabled={button}
+            data={siswa}
             keyExtractor={(item) => item.key}
             renderItem={({item}) => (
               <TouchableOpacity
+                disabled={button}
                 onLongPress={() => {
                   setDisplay(true);
                 }}>
@@ -262,6 +273,7 @@ export default function list({navigation}) {
                       {/* kalo di tahan lama maka checkbox ini akan muncul */}
                       {display ? (
                         <Checkbox
+                          disabled={button}
                           status={item.check ? 'checked' : 'unchecked'}
                           onPress={() => {
                             changeCheckBox(item.key, checked);
@@ -270,6 +282,7 @@ export default function list({navigation}) {
                         />
                       ) : null}
                       <TouchableOpacity
+                        disabled={button}
                         onPress={() => {
                           setDetail({
                             nama: item.nama,
@@ -299,6 +312,7 @@ export default function list({navigation}) {
           />
 
           <ModalForm
+            button={button}
             setSiswa={setSiswa}
             onToggleSnackBar={onToggleSnackBar}
             setVisible2={setVisible2}

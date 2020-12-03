@@ -14,10 +14,12 @@ export default function SelectPicker({
   setSiswa,
   setProgress,
   data,
+  button,
 }) {
   return (
     <View style={styles.select}>
       <RNPickerSelect
+        disabled={button}
         style={styles}
         placeholder={{label: `${title}...`, value: null}}
         onValueChange={(value) => {

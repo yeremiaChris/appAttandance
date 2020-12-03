@@ -65,6 +65,9 @@ export default function laporan({
   setVisible2,
   navigation,
 }) {
+  // disabled button
+  const [button, setButton] = useState(true);
+
   // state select
   const [items, setItems] = useState(label);
   const [nilai, setNilai] = useState({
@@ -125,6 +128,7 @@ export default function laporan({
         setListLaporan(list);
         setFilteredDataSource(list);
         setProgress(false);
+        setButton(false);
       });
     return () => dataLaporan;
   }, [dataLapors]);
@@ -137,6 +141,7 @@ export default function laporan({
   const [tidakHadir, setTidakHadir] = useState([]);
   const [jumlahHadir, setJumlahHadir] = useState(0);
   const [jumlahTidakHadir, setJumlahTidakHadir] = useState(0);
+
   // handleModal Form hadir dan tidak
   const handleForm = (
     dataHadir,
@@ -149,6 +154,7 @@ export default function laporan({
     setTidakHadir(dataTidakHadir);
     setJumlahHadir(jumlahHadir);
     setJumlahTidakHadir(jumlahTidakHadir);
+    setButton(false);
   };
 
   // closeModal form hadir tidak
@@ -156,6 +162,7 @@ export default function laporan({
     setModal(false);
     setHadir();
     setTidakHadir();
+    setButton(false);
   };
   const laporSet = (test, tests, val) => {
     setDataLapor(val);
@@ -165,12 +172,14 @@ export default function laporan({
   // goback
   const backGo = () => {
     navigation.goBack();
+    setButton(false);
   };
   console.log(filteredDataSource);
   return (
     <>
       <View style={styles.searchWrap}>
         <SearchByTanggal
+          button={button}
           handle={backGo}
           data={listLaporan}
           set={setListLaporan}
@@ -179,6 +188,7 @@ export default function laporan({
       </View>
       <View style={styles.viewForCard}>
         <DaftarHadirDanTidak
+          button={button}
           modal={modal}
           closeModal={closeModal}
           hadir={hadir}
@@ -189,6 +199,7 @@ export default function laporan({
         <ProgressBar progress={progress} durasi={durasi} />
 
         <SelectPicker
+          button={button}
           title="Pilih laporan"
           items={items}
           setNilai={setNilai}
@@ -209,7 +220,7 @@ export default function laporan({
         <View>
           <Card style={styles.container}>
             <Card.Content style={styles.card}>
-              <TouchableOpacity>
+              <TouchableOpacity disabled={button}>
                 <View>
                   <Title>{title}</Title>
                 </View>
@@ -218,11 +229,13 @@ export default function laporan({
           </Card>
         </View>
         <FlatList
+          disabled={button}
           data={filteredDataSource}
           keyExtractor={(item) => item.key}
           renderItem={({item}) => {
             return (
               <TouchableOpacity
+                disabled={button}
                 onPress={() =>
                   handleForm(
                     item.dataHadir,

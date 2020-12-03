@@ -10,6 +10,7 @@ export default function search({
   data,
   set,
   setFilteredDataSource,
+  button,
 }) {
   // pencarian
   // const [datas, setDatas] = useState(datas);
@@ -57,12 +58,14 @@ export default function search({
   return (
     <View style={styles.header}>
       <IconButton
+        disabled={button}
         style={styles.icon}
         icon="arrow-left"
         size={25}
         onPress={handle}
       />
       <SearchBar
+        disabled={button}
         style={styles.search}
         placeholder="Cari Siswa..."
         value={search}

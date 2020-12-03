@@ -38,7 +38,12 @@ const siswaSchema = yup.object({
   angkatan: yup.string().required('Field ini tidak boleh kosong ...'),
   jurusan: yup.string().required('Field ini tidak boleh kosong ...'),
 });
-export default function modal({setSiswa, onToggleSnackBar, setVisible2}) {
+export default function modal({
+  setSiswa,
+  onToggleSnackBar,
+  setVisible2,
+  button,
+}) {
   const closeModal = () => {
     setModal(false);
   };
@@ -71,13 +76,19 @@ export default function modal({setSiswa, onToggleSnackBar, setVisible2}) {
   return (
     <View style={styles.container}>
       <Modal animationType="slide" visible={modal}>
-        <TouchableWithoutFeedback onPress={dismisKeyboard}>
+        <TouchableWithoutFeedback onPress={dismisKeyboard} disabled={button}>
           <View>
             <View style={styles.header}>
-              <IconButton icon="arrow-left" size={25} onPress={closeModal} />
+              <IconButton
+                icon="arrow-left"
+                size={25}
+                onPress={closeModal}
+                disabled={button}
+              />
               <Text style={styles.textHeader}>Tambah Siswa</Text>
             </View>
             <Formik
+              disabled={button}
               initialValues={{nama: '', angkatan: '', jurusan: ''}}
               validationSchema={siswaSchema}
               onSubmit={handleSubmit}>
@@ -91,6 +102,7 @@ export default function modal({setSiswa, onToggleSnackBar, setVisible2}) {
               }) => (
                 <View style={styles.inputWrapper}>
                   <TextInput
+                    disabled={button}
                     label="Tulis nama..."
                     style={styles.textInput}
                     onChangeText={handleChange('nama')}
@@ -101,6 +113,7 @@ export default function modal({setSiswa, onToggleSnackBar, setVisible2}) {
                     {touched.nama && errors.nama}
                   </Text>
                   <RNPickerSelect
+                    disabled={button}
                     style={styles}
                     placeholder={{label: 'Pilih Angkatan...', value: null}}
                     onValueChange={handleChange('angkatan')}
@@ -112,6 +125,7 @@ export default function modal({setSiswa, onToggleSnackBar, setVisible2}) {
                     {touched.angkatan && errors.angkatan}
                   </Text>
                   <RNPickerSelect
+                    disabled={button}
                     style={styles}
                     placeholder={{label: 'Pilih Jurusan...', value: null}}
                     onValueChange={handleChange('jurusan')}
@@ -124,6 +138,7 @@ export default function modal({setSiswa, onToggleSnackBar, setVisible2}) {
                   </Text>
                   <View style={styles.viewButton}>
                     <IconButton
+                      disabled={button}
                       icon="send"
                       size={30}
                       color="purple"
@@ -138,7 +153,13 @@ export default function modal({setSiswa, onToggleSnackBar, setVisible2}) {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-      <FAB style={styles.fab} medium icon="plus" onPress={handleForm} />
+      <FAB
+        disabled={button}
+        style={styles.fab}
+        medium
+        icon="plus"
+        onPress={handleForm}
+      />
     </View>
   );
 }
