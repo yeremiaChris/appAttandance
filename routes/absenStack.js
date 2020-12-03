@@ -18,52 +18,7 @@ export default function homeStack({navigation}) {
         name="Absen"
         component={Absen}
         options={{
-          headerTitle: () => (
-            <>
-              <View style={styles.header}>
-                <IconButton
-                  style={styles.icon}
-                  icon="menu"
-                  size={25}
-                  onPress={handleMenu}
-                />
-                <SearchBar
-                  style={styles.search}
-                  placeholder="Cari Siswa..."
-                  onChangeText={(text) => {
-                    console.log(text);
-                  }}
-                  onPress={() => alert('onPress')}
-                />
-              </View>
-            </>
-          ),
-        }}
-      />
-      <Stack.Screen
-        name="Laporan"
-        component={Laporan}
-        options={{
-          headerTitle: () => (
-            <>
-              <View style={styles.header}>
-                <IconButton
-                  style={styles.icon}
-                  icon="menu"
-                  size={25}
-                  onPress={handleMenu}
-                />
-                <SearchBar
-                  style={styles.search}
-                  placeholder="Cari Siswa..."
-                  onChangeText={(text) => {
-                    console.log(text);
-                  }}
-                  onPress={() => console.log('searc')}
-                />
-              </View>
-            </>
-          ),
+          headerShown: false,
         }}
       />
     </Stack.Navigator>

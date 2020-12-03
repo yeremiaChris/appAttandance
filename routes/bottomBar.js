@@ -1,11 +1,11 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import homeStack from './homeStack';
-import absenStack from './absenStack';
-import daftarStack from './daftarStack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import List from '../components/list';
-import laporanStack from './laporanStack';
+import list from '../components/list';
+import home from '../components/home';
+import absen from '../components/absen';
+import laporan from '../components/laporan';
 const Tab = createBottomTabNavigator();
 export default function bottomBar({route}) {
   return (
@@ -24,21 +24,21 @@ export default function bottomBar({route}) {
       />
       <Tab.Screen
         name="Daftar"
-        component={daftarStack}
+        component={list}
         options={{
           tabBarIcon: () => <Ionicons name="ios-people-outline" size={25} />,
         }}
       />
       <Tab.Screen
         name="Absen"
-        component={absenStack}
+        component={absen}
         options={{
           tabBarIcon: () => <Ionicons name="ios-open-outline" size={25} />,
         }}
       />
       <Tab.Screen
         name="Laporan"
-        component={laporanStack}
+        component={laporan}
         options={{
           tabBarIcon: () => (
             <Ionicons name="ios-folder-open-outline" size={25} />

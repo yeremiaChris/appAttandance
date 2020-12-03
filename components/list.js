@@ -30,7 +30,7 @@ import firestore from '@react-native-firebase/firestore';
 import {changeCheckAll, deleteSiswa, dataAngkatan} from '../firestore/daftar';
 import SnackBar from '../shared/snackBar';
 import ProgressBar from '../shared/progressBar';
-
+import Search from '../shared/search';
 const initialSiswa = [
   {
     nama: '',
@@ -53,7 +53,7 @@ const label = [
   {label: 'Angkatan 2018', value: '2018'},
   {label: 'Angkatan 2017', value: '2017'},
 ];
-export default function list() {
+export default function list({navigation}) {
   // modalDetail
   const [visible, setVisible] = useState(false);
   const showModal = () => setVisible(true);
@@ -126,12 +126,15 @@ export default function list() {
   // progress bar
   const [progress, setProgress] = useState(true);
   const [durasi, setDurasi] = useState(1);
+
   // get data from firestore
   const [siswa, setSiswa] = useState([]);
+  // untuk search
+  const [filteredDataSource, setFilteredDataSource] = useState([]);
   useEffect(() => {
     const getDaftar = firestore()
       .collection('daftar')
-      .orderBy('tanggal', 'desc')
+      .orderBy('tanggal', 'asc')
       .onSnapshot(function (snabshot) {
         if (snabshot.empty) {
           setProgress(false);
@@ -150,6 +153,7 @@ export default function list() {
             list.push(datas);
           });
           setSiswa(list);
+          setFilteredDataSource(list);
         }
       });
     return () => {
@@ -184,111 +188,124 @@ export default function list() {
     setTitle(newTitle);
   };
 
+  // goback
+  const backGo = () => {
+    navigation.goBack();
+  };
+
   return (
-    <View style={styles.cardWrapper}>
-      {/* modal */}
-      <ModalDetail
-        visible={visible}
-        hideModal={hideModal}
-        containerStyle={containerStyle}
-        detail={detail}
-        setVisible={setVisible}
-      />
-      {/* akhir modal */}
-      <ProgressBar progress={progress} durasi={durasi} />
-
-      <SelectPicker
-        title="Pilih Angkatan"
-        items={items}
-        nilai={nilai}
-        setNilai={setNilai}
-        data={dataAngkatan}
-        setSiswa={setSiswa}
-        setProgress={setProgress}
-        changeTitle={changeTitle}
-      />
-      <SnackBar
-        onDismissSnackBar={onDismissSnackBar}
-        visible={visible2}
-        setVisible2={setVisible2}
-      />
-      <View style={styles.containerdua}>
-        {display ? (
-          <>
-            <View style={styles.viewDelete}>
-              <Checkbox
-                status={all ? 'unchecked' : 'checked'}
-                onPress={() => {
-                  changeCheckAll(all, setAll);
-                }}
-              />
-              <IconButton
-                icon="delete"
-                color={Colors.grey500}
-                size={20}
-                onPress={twoOptionAlertHandler}
-              />
-            </View>
-          </>
-        ) : null}
-
-        <FlatList
+    <>
+      <View style={styles.searchWrap}>
+        <Search
+          handle={backGo}
           data={siswa}
-          keyExtractor={(item) => item.key}
-          renderItem={({item}) => (
-            <TouchableOpacity
-              onLongPress={() => {
-                setDisplay(true);
-              }}>
-              <View style={styles.viewForCard}>
-                <Card style={styles.container}>
-                  <Card.Content style={styles.card}>
-                    {/* kalo di tahan lama maka checkbox ini akan muncul */}
-                    {display ? (
-                      <Checkbox
-                        status={item.check ? 'checked' : 'unchecked'}
-                        onPress={() => {
-                          changeCheckBox(item.key, checked);
-                          setChecked(!checked);
-                        }}
-                      />
-                    ) : null}
-                    <TouchableOpacity
-                      onPress={() => {
-                        setDetail({
-                          nama: item.nama,
-                          angkatan: item.angkatan,
-                          jurusan: item.jurusan,
-                          key: item.key,
-                        });
-                        showModal();
-                      }}
-                      onLongPress={() => setDisplay(true)}>
-                      <View>
-                        <Title>{item.nama}</Title>
-                        <Paragraph>
-                          {item.jurusan} {item.angkatan}
-                        </Paragraph>
-                      </View>
-                    </TouchableOpacity>
-                    <Avatar.Image
-                      size={50}
-                      source={require('../assets/list.png')}
-                    />
-                  </Card.Content>
-                </Card>
-              </View>
-            </TouchableOpacity>
-          )}
-        />
-
-        <ModalForm
-          setSiswa={setSiswa}
-          onToggleSnackBar={onToggleSnackBar}
-          setVisible2={setVisible2}
+          set={setSiswa}
+          setFilteredDataSource={setFilteredDataSource}
         />
       </View>
-    </View>
+      <View style={styles.cardWrapper}>
+        <ModalDetail
+          visible={visible}
+          hideModal={hideModal}
+          containerStyle={containerStyle}
+          detail={detail}
+          setVisible={setVisible}
+        />
+        {/* akhir modal */}
+        <ProgressBar progress={progress} durasi={durasi} />
+        <SelectPicker
+          title="Pilih Angkatan"
+          items={items}
+          nilai={nilai}
+          setNilai={setNilai}
+          data={dataAngkatan}
+          setSiswa={setSiswa}
+          setProgress={setProgress}
+          changeTitle={changeTitle}
+        />
+        <SnackBar
+          onDismissSnackBar={onDismissSnackBar}
+          visible={visible2}
+          setVisible2={setVisible2}
+        />
+        <View style={styles.containerdua}>
+          {display ? (
+            <>
+              <View style={styles.viewDelete}>
+                <Checkbox
+                  status={all ? 'unchecked' : 'checked'}
+                  onPress={() => {
+                    changeCheckAll(all, setAll);
+                  }}
+                />
+                <IconButton
+                  icon="delete"
+                  color={Colors.grey500}
+                  size={20}
+                  onPress={twoOptionAlertHandler}
+                />
+              </View>
+            </>
+          ) : null}
+
+          <FlatList
+            data={filteredDataSource}
+            keyExtractor={(item) => item.key}
+            renderItem={({item}) => (
+              <TouchableOpacity
+                onLongPress={() => {
+                  setDisplay(true);
+                }}>
+                <View style={styles.viewForCard}>
+                  <Card style={styles.container}>
+                    <Card.Content style={styles.card}>
+                      {/* kalo di tahan lama maka checkbox ini akan muncul */}
+                      {display ? (
+                        <Checkbox
+                          status={item.check ? 'checked' : 'unchecked'}
+                          onPress={() => {
+                            changeCheckBox(item.key, checked);
+                            setChecked(!checked);
+                          }}
+                        />
+                      ) : null}
+                      <TouchableOpacity
+                        onPress={() => {
+                          setDetail({
+                            nama: item.nama,
+                            angkatan: item.angkatan,
+                            jurusan: item.jurusan,
+                            key: item.key,
+                          });
+                          showModal();
+                        }}
+                        onLongPress={() => setDisplay(true)}>
+                        <View>
+                          <Title>{item.nama}</Title>
+                          <Paragraph>
+                            {item.jurusan} {item.angkatan}
+                          </Paragraph>
+                        </View>
+                      </TouchableOpacity>
+                      <Avatar.Image
+                        size={50}
+                        source={require('../assets/list.png')}
+                      />
+                    </Card.Content>
+                  </Card>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+
+          <ModalForm
+            setSiswa={setSiswa}
+            onToggleSnackBar={onToggleSnackBar}
+            setVisible2={setVisible2}
+          />
+        </View>
+      </View>
+    </>
   );
 }
 const styles = StyleSheet.create({
@@ -332,5 +349,9 @@ const styles = StyleSheet.create({
   viewDelete: {
     justifyContent: 'space-between',
     flexDirection: 'row',
+  },
+  searchWrap: {
+    backgroundColor: 'white',
+    padding: 10,
   },
 });

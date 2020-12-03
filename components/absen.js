@@ -24,6 +24,7 @@ import firestore from '@react-native-firebase/firestore';
 import {showMessage, hideMessage} from 'react-native-flash-message';
 
 import ProgressBar from '../shared/progressBar';
+import Search from '../shared/search';
 
 // radio button
 const data = [
@@ -74,11 +75,13 @@ export default function Absen({navigation}) {
   // mensortir yang hadir saja
   const [hadirSaja, setHadirSaja] = useState([]);
 
+  // untuk search
+  const [filteredDataSource, setFilteredDataSource] = useState([]);
   // getData doa pagi
   useEffect(() => {
     const daftarTmp = firestore().collection('daftar');
     const data = daftarTmp
-      .orderBy('tanggal', 'desc')
+      .orderBy('tanggal', 'asc')
       .onSnapshot(function (snabshot) {
         let list = [];
         snabshot.forEach((doc) => {
@@ -97,10 +100,12 @@ export default function Absen({navigation}) {
           }
         });
         setDoaPagi(list);
+        setFilteredDataSource(list);
         setProgress(false);
       });
-    return () => data();
+    return data;
   }, []);
+
   // getData doa pagi
   useEffect(() => {
     const daftarTmp = firestore().collection('daftar');
@@ -119,7 +124,7 @@ export default function Absen({navigation}) {
         });
         setTidakHadirSaja(list);
       });
-    return () => data();
+    return data;
   }, []);
 
   useEffect(() => {
@@ -139,7 +144,7 @@ export default function Absen({navigation}) {
         });
         setHadirSaja(list);
       });
-    return () => data();
+    return data;
   }, []);
 
   // buat laporan yang hadir saja dan tidak hadir
@@ -212,101 +217,116 @@ export default function Absen({navigation}) {
         return;
       });
   };
-  return (
-    <View style={styles.viewForCard}>
-      <ProgressBar progress={progress} durasi={durasi} />
 
-      <SelectPickker
-        title="Pilih Absen"
-        items={items}
-        nilai={nilai}
-        setNilai={setNilai}
-        changeTitle={changeTitle}
-        handlePilih={handlePilih}
-        setSiswa={setTitle}
-        valueLabel="Doa Pagi"
-        handlePilihPagi={handlePilih}
-        data={dataSelect}
-      />
-      <View>
-        <Card style={styles.container}>
-          <Card.Content style={styles.card}>
-            <TouchableOpacity>
-              <View>
-                <Title>{title}</Title>
-              </View>
-            </TouchableOpacity>
-          </Card.Content>
-        </Card>
+  // goback
+  const backGo = () => {
+    navigation.goBack();
+  };
+
+  return (
+    <>
+      <View style={styles.searchWrap}>
+        <Search
+          handle={backGo}
+          data={doaPagi}
+          setFilteredDataSource={setFilteredDataSource}
+        />
       </View>
-      <FlatList
-        data={doaPagi}
-        keyExtractor={(item) => item.key}
-        renderItem={({item}) => (
-          <View>
-            <Card style={styles.container}>
-              <Card.Content style={styles.card}>
-                <TouchableOpacity>
-                  <View>
-                    <Title>{item.nama}</Title>
-                    <Paragraph>
-                      {item.jurusan} {item.angkatan}
-                    </Paragraph>
-                  </View>
-                  <View>
-                    <Title style={styles.keterangan}>Keterangan</Title>
-                    <View style={styles.radio}>
-                      <View style={styles.radioChild}>
-                        <Text>Hadir</Text>
-                        <RadioButton
-                          status={
-                            item.hadir === true && item.tidakHadir === false
-                              ? 'checked'
-                              : 'unchecked'
-                          }
-                          onPress={() => {
-                            changeRadio(item.key, true, 'Hadir', false);
-                          }}
-                          value="Hadir"
-                        />
-                      </View>
-                      <View style={styles.radioChild}>
-                        <Text>Tiidak Hadir</Text>
-                        <RadioButton
-                          status={
-                            item.hadir == false && item.tidakHadir == true
-                              ? 'checked'
-                              : 'unchecked'
-                          }
-                          onPress={() => {
-                            changeRadio(item.key, false, 'Tidak Hadir', true);
-                          }}
-                          value="Tidak Hadir"
-                        />
+      <View style={styles.viewForCard}>
+        <ProgressBar progress={progress} durasi={durasi} />
+
+        <SelectPickker
+          title="Pilih Absen"
+          items={items}
+          nilai={nilai}
+          setNilai={setNilai}
+          changeTitle={changeTitle}
+          handlePilih={handlePilih}
+          setSiswa={setTitle}
+          valueLabel="Doa Pagi"
+          handlePilihPagi={handlePilih}
+          data={dataSelect}
+        />
+        <View>
+          <Card style={styles.container}>
+            <Card.Content style={styles.card}>
+              <TouchableOpacity>
+                <View>
+                  <Title>{title}</Title>
+                </View>
+              </TouchableOpacity>
+            </Card.Content>
+          </Card>
+        </View>
+        <FlatList
+          data={filteredDataSource}
+          keyExtractor={(item) => item.key}
+          renderItem={({item}) => (
+            <View>
+              <Card style={styles.container}>
+                <Card.Content style={styles.card}>
+                  <TouchableOpacity>
+                    <View>
+                      <Title>{item.nama}</Title>
+                      <Paragraph>
+                        {item.jurusan} {item.angkatan}
+                      </Paragraph>
+                    </View>
+                    <View>
+                      <Title style={styles.keterangan}>Keterangan</Title>
+                      <View style={styles.radio}>
+                        <View style={styles.radioChild}>
+                          <Text>Hadir</Text>
+                          <RadioButton
+                            status={
+                              item.hadir === true && item.tidakHadir === false
+                                ? 'checked'
+                                : 'unchecked'
+                            }
+                            onPress={() => {
+                              changeRadio(item.key, true, 'Hadir', false);
+                            }}
+                            value="Hadir"
+                          />
+                        </View>
+                        <View style={styles.radioChild}>
+                          <Text>Tiidak Hadir</Text>
+                          <RadioButton
+                            status={
+                              item.hadir == false && item.tidakHadir == true
+                                ? 'checked'
+                                : 'unchecked'
+                            }
+                            onPress={() => {
+                              changeRadio(item.key, false, 'Tidak Hadir', true);
+                            }}
+                            value="Tidak Hadir"
+                          />
+                        </View>
                       </View>
                     </View>
+                  </TouchableOpacity>
+                  <View>
+                    <Avatar.Image
+                      size={50}
+                      source={require('../assets/list.png')}
+                    />
                   </View>
-                </TouchableOpacity>
-                <View>
-                  <Avatar.Image
-                    size={50}
-                    source={require('../assets/list.png')}
-                  />
-                </View>
-              </Card.Content>
-            </Card>
-          </View>
-        )}
-      />
-      <FAB
-        style={styles.fab}
-        medium
-        icon="send"
-        onPress={(key) => {
-          twoOptionAlertHandler();
-        }}
-      />
-    </View>
+                </Card.Content>
+              </Card>
+            </View>
+          )}
+        />
+        <FAB
+          style={styles.fab}
+          medium
+          icon="send"
+          onPress={(key) => {
+            twoOptionAlertHandler();
+          }}
+        />
+      </View>
+    </>
   );
 }
 
@@ -352,5 +372,9 @@ const styles = StyleSheet.create({
   },
   test: {
     elevation: 10,
+  },
+  searchWrap: {
+    backgroundColor: 'white',
+    padding: 10,
   },
 });

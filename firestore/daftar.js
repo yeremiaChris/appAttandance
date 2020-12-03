@@ -16,10 +16,10 @@ export const buatLaporan = (dataArray, dataArray2) => {
       totalTidakHadir: dataArray.length,
       tanggal: moment(new Date()).format('dddd,D MMM yyyy'),
       jam: moment(new Date()).format('HH:mm'),
-      waktu: new Date().toString(),
+      waktu: new Date(),
     })
-    .then((res) => console.log('berhasil'))
-    .catch((err) => console.log('err'));
+    .then((res) => console.log(res))
+    .catch((err) => console.log(err));
 };
 // // ini untuk input ke data base laporan yang hadir saja
 export const buatLaporanMinggu = (dataArray, dataArray2) => {

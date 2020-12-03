@@ -25,50 +25,21 @@ export default function homeStack() {
       />
       <Stack.Screen
         name="Daftar"
+        options={{headerShown: false}}
         component={List}
-        options={{
-          headerTitle: () => (
-            <SearchBar
-              style={styles.search}
-              placeholder="Cari Siswa..."
-              onChangeText={(text) => {
-                console.log(text);
-              }}
-              onPress={() => console.log('search')}
-            />
-          ),
-        }}
       />
       <Stack.Screen
         name="Absen"
         component={Absen}
         options={{
-          headerTitle: () => (
-            <SearchBar
-              style={styles.search}
-              placeholder="Cari Siswa..."
-              onChangeText={(text) => {
-                console.log(text);
-              }}
-              onPress={() => console.log('search')}
-            />
-          ),
+          headerShown: false,
         }}
       />
       <Stack.Screen
         name="Laporan"
         component={Laporan}
         options={{
-          headerTitle: () => (
-            <SearchBar
-              style={styles.search}
-              placeholder="Cari Siswa..."
-              onChangeText={(text) => {
-                console.log(text);
-              }}
-              onPress={() => alert('onPress')}
-            />
-          ),
+          headerShown: false,
         }}
       />
     </Stack.Navigator>

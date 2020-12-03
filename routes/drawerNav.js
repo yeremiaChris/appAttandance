@@ -1,9 +1,7 @@
 import React from 'react';
 const Drawer = createDrawerNavigator();
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import SearchBar from 'react-native-dynamic-search-bar';
 import {StyleSheet} from 'react-native';
-import bottomaBar from './bottomBar';
 import drawerDaftar from './drawerDaftar';
 export default function drawerNav() {
   return (

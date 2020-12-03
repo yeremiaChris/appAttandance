@@ -61,22 +61,8 @@ const styles = StyleSheet.create({
     padding: 10,
   },
 });
-export default function item({props}) {
-  // handleTouchKeDaftar Siswa
-  const handleTouch = () => {
-    props.navigation.navigate('Daftar');
-  };
 
-  // handle ke absen doapagi
-  const handleDoapagi = () => {
-    props.navigation.navigate('Absen');
-  };
-
-  // handle ke laporan
-  const handleLaporan = () => {
-    props.navigation.navigate('Laporan');
-  };
-
+export default function item({props, doaPagi, progress, setProgress}) {
   // data laporan yang hadir
   const [listLaporan, setListLaporan] = useState([]);
   const [minggu, setMinggu] = useState([]);
@@ -153,6 +139,27 @@ export default function item({props}) {
     setModal(false);
     setHadir();
     setTidakHadir();
+  };
+
+  // handleTouchKeDaftar Siswa
+  const handleTouch = () => {
+    props.navigation.navigate('Daftar', {listLaporan});
+  };
+
+  // handle ke absen doapagi
+  const handleDoapagi = () => {
+    props.navigation.navigate('Absen', {
+      doaPagi: doaPagi,
+      progress: progress,
+    });
+    // setInterval(() => {
+    //   setProgress(false);
+    // }, 3000);
+  };
+
+  // handle ke laporan
+  const handleLaporan = () => {
+    props.navigation.navigate('Laporan');
   };
 
   return (

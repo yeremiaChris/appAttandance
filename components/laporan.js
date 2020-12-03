@@ -17,6 +17,8 @@ import moment from 'moment';
 import DaftarHadirDanTidak from '../routes/daftarYangHadirDanTidak';
 import SnackBar from '../shared/snackBar';
 import ProgressBar from '../shared/progressBar';
+import SearchByTanggal from '../shared/searchByTanggal';
+import {log} from 'react-native-reanimated';
 
 // label select
 const label = [
@@ -57,7 +59,12 @@ const IbadahMinggu = [
     key: '2',
   },
 ];
-export default function laporan({visible2, onDismissSnackBar, setVisible2}) {
+export default function laporan({
+  visible2,
+  onDismissSnackBar,
+  setVisible2,
+  navigation,
+}) {
   // state select
   const [items, setItems] = useState(label);
   const [nilai, setNilai] = useState({
@@ -90,6 +97,8 @@ export default function laporan({visible2, onDismissSnackBar, setVisible2}) {
 
   const [dataLapors, setDataLapor] = useState(true);
   const [dataLaporFix, setDataLaporFix] = useState('laporanDoaPagi');
+  // untuk search
+  const [filteredDataSource, setFilteredDataSource] = useState([]);
   useEffect(() => {
     if (dataLapors == true) {
       setDataLaporFix('laporanIbadahMinggu');
@@ -98,7 +107,7 @@ export default function laporan({visible2, onDismissSnackBar, setVisible2}) {
     }
     const dataLaporan = firestore()
       .collection(dataLaporFix)
-      .orderBy('waktu', 'desc')
+      .orderBy('tanggal', 'asc')
       .onSnapshot(function (snabshot) {
         let list = [];
         snabshot.forEach((doc) => {
@@ -114,6 +123,7 @@ export default function laporan({visible2, onDismissSnackBar, setVisible2}) {
           list.push(datas);
         });
         setListLaporan(list);
+        setFilteredDataSource(list);
         setProgress(false);
       });
     return () => dataLaporan;
@@ -152,91 +162,106 @@ export default function laporan({visible2, onDismissSnackBar, setVisible2}) {
   };
 
   const [siswa, setSiswa] = useState('');
+  // goback
+  const backGo = () => {
+    navigation.goBack();
+  };
+  console.log(filteredDataSource);
   return (
-    <View style={styles.viewForCard}>
-      <DaftarHadirDanTidak
-        modal={modal}
-        closeModal={closeModal}
-        hadir={hadir}
-        tidakHadir={tidakHadir}
-        jumlahHadir={jumlahHadir}
-        jumlahTidakHadir={jumlahTidakHadir}
-      />
-      <ProgressBar progress={progress} durasi={durasi} />
-
-      <SelectPicker
-        title="Pilih laporan"
-        items={items}
-        setNilai={setNilai}
-        nilai={nilai}
-        changeTitle={changeTitle}
-        handlePilih={handlePilihMinggu}
-        handlePilihPagi={handlePilihPagi}
-        valueLabel="DoaPagi"
-        data={laporSet}
-        setSiswa={setSiswa}
-        setProgress={setProgress}
-      />
-      <SnackBar
-        onDismissSnackBar={onDismissSnackBar}
-        visible={visible2}
-        setVisible2={setVisible2}
-      />
-      <View>
-        <Card style={styles.container}>
-          <Card.Content style={styles.card}>
-            <TouchableOpacity>
-              <View>
-                <Title>{title}</Title>
-              </View>
-            </TouchableOpacity>
-          </Card.Content>
-        </Card>
+    <>
+      <View style={styles.searchWrap}>
+        <SearchByTanggal
+          handle={backGo}
+          data={listLaporan}
+          set={setListLaporan}
+          setFilteredDataSource={setFilteredDataSource}
+        />
       </View>
-      <FlatList
-        data={listLaporan}
-        keyExtractor={(item) => item.key}
-        renderItem={({item}) => {
-          return (
-            <TouchableOpacity
-              onPress={() =>
-                handleForm(
-                  item.dataHadir,
-                  item.dataTidakHadir,
-                  item.hadir,
-                  item.tidakHadir,
-                )
-              }>
-              <View>
-                <Card style={styles.container}>
-                  <Card.Content style={styles.card}>
-                    <View>
-                      <Title>{title}</Title>
-                      <Paragraph>{item.tanggal}</Paragraph>
-                      <Paragraph>pukul {item.jam} </Paragraph>
-                    </View>
-                    <View style={styles.surfaceContainer}>
-                      <Text>Hadir</Text>
-                      <Surface style={styles.surface}>
-                        <Text style={styles.textSurface}>{item.hadir}</Text>
-                      </Surface>
-                    </View>
-                    <View style={styles.surfaceContainer}>
-                      <Text>Tidak Hadir</Text>
-                      <Surface style={styles.surface}>
-                        <Text style={styles.textSurface}>
-                          {item.tidakHadir}
-                        </Text>
-                      </Surface>
-                    </View>
-                  </Card.Content>
-                </Card>
-              </View>
-            </TouchableOpacity>
-          );
-        }}
-      />
-    </View>
+      <View style={styles.viewForCard}>
+        <DaftarHadirDanTidak
+          modal={modal}
+          closeModal={closeModal}
+          hadir={hadir}
+          tidakHadir={tidakHadir}
+          jumlahHadir={jumlahHadir}
+          jumlahTidakHadir={jumlahTidakHadir}
+        />
+        <ProgressBar progress={progress} durasi={durasi} />
+
+        <SelectPicker
+          title="Pilih laporan"
+          items={items}
+          setNilai={setNilai}
+          nilai={nilai}
+          changeTitle={changeTitle}
+          handlePilih={handlePilihMinggu}
+          handlePilihPagi={handlePilihPagi}
+          valueLabel="DoaPagi"
+          data={laporSet}
+          setSiswa={setSiswa}
+          setProgress={setProgress}
+        />
+        <SnackBar
+          onDismissSnackBar={onDismissSnackBar}
+          visible={visible2}
+          setVisible2={setVisible2}
+        />
+        <View>
+          <Card style={styles.container}>
+            <Card.Content style={styles.card}>
+              <TouchableOpacity>
+                <View>
+                  <Title>{title}</Title>
+                </View>
+              </TouchableOpacity>
+            </Card.Content>
+          </Card>
+        </View>
+        <FlatList
+          data={filteredDataSource}
+          keyExtractor={(item) => item.key}
+          renderItem={({item}) => {
+            return (
+              <TouchableOpacity
+                onPress={() =>
+                  handleForm(
+                    item.dataHadir,
+                    item.dataTidakHadir,
+                    item.hadir,
+                    item.tidakHadir,
+                  )
+                }>
+                <View>
+                  <Card style={styles.container}>
+                    <Card.Content style={styles.card}>
+                      <View>
+                        <Title>{title}</Title>
+                        <Paragraph>{item.tanggal}</Paragraph>
+                        <Paragraph>pukul {item.jam} </Paragraph>
+                      </View>
+                      <View style={styles.surfaceContainer}>
+                        <Text>Hadir</Text>
+                        <Surface style={styles.surface}>
+                          <Text style={styles.textSurface}>{item.hadir}</Text>
+                        </Surface>
+                      </View>
+                      <View style={styles.surfaceContainer}>
+                        <Text>Tidak Hadir</Text>
+                        <Surface style={styles.surface}>
+                          <Text style={styles.textSurface}>
+                            {item.tidakHadir}
+                          </Text>
+                        </Surface>
+                      </View>
+                    </Card.Content>
+                  </Card>
+                </View>
+              </TouchableOpacity>
+            );
+          }}
+        />
+      </View>
+    </>
   );
 }
 
@@ -268,5 +293,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 70,
     justifyContent: 'space-between',
+  },
+  searchWrap: {
+    backgroundColor: 'white',
+    padding: 10,
   },
 });

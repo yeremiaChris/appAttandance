@@ -15,7 +15,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import DrawerNav from './routes/drawerNav';
 import {StyleSheet} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-
 const App: () => React$Node = () => {
   const styles = StyleSheet.create({
     search: {

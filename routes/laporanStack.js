@@ -6,36 +6,19 @@ import Header from '../shared/Header';
 import SearchBar from 'react-native-dynamic-search-bar';
 import {StyleSheet, View} from 'react-native';
 import {IconButton, Colors} from 'react-native-paper';
+import Search from '../shared/search';
 export default function homeStack({navigation}) {
   const handleMenu = () => {
     navigation.openDrawer();
   };
+
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="Laporan"
         component={Laporan}
         options={{
-          headerTitle: () => (
-            <>
-              <View style={styles.header}>
-                <IconButton
-                  style={styles.icon}
-                  icon="menu"
-                  size={25}
-                  onPress={handleMenu}
-                />
-                <SearchBar
-                  style={styles.search}
-                  placeholder="Cari Siswa..."
-                  onChangeText={(text) => {
-                    console.log(text);
-                  }}
-                  onPress={() => console.log('search')}
-                />
-              </View>
-            </>
-          ),
+          headerShown: false,
         }}
       />
     </Stack.Navigator>
