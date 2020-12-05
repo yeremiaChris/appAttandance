@@ -230,7 +230,7 @@ function list({navigation, selectedLocation}) {
           nilai={nilai}
           setNilai={setNilai}
           data={dataAngkatan}
-          setSiswa={setSiswa}
+          setSiswa={setFilteredDataSource}
           setProgress={setProgress}
           changeTitle={changeTitle}
         />
@@ -264,7 +264,7 @@ function list({navigation, selectedLocation}) {
 
           <FlatList
             disabled={button}
-            data={siswa}
+            data={filteredDataSource}
             keyExtractor={(item) => item.key}
             renderItem={({item}) => (
               <TouchableOpacity
