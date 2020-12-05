@@ -24,6 +24,7 @@ const label = [
   {label: 'Doa Pagi', value: true},
   {label: 'Ibadah Minggu', value: false},
 ];
+
 function laporan({visible2, onDismissSnackBar, setVisible2, navigation}) {
   // disabled button
   const [button, setButton] = useState(true);
@@ -33,6 +34,7 @@ function laporan({visible2, onDismissSnackBar, setVisible2, navigation}) {
   const [nilai, setNilai] = useState({
     tangkapValue: null,
   });
+
   const handlePilihMinggu = () => {
     setPilih(IbadahMinggu);
   };
@@ -57,8 +59,11 @@ function laporan({visible2, onDismissSnackBar, setVisible2, navigation}) {
 
   const [dataLapors, setDataLapor] = useState(true);
   const [dataLaporFix, setDataLaporFix] = useState('laporanDoaPagi');
+
   // untuk search
   const [filteredDataSource, setFilteredDataSource] = useState([]);
+
+  // manggil laporan
   useEffect(() => {
     const dataLaporan = firestore()
       .collection('laporanDoaPagi')
@@ -89,8 +94,10 @@ function laporan({visible2, onDismissSnackBar, setVisible2, navigation}) {
       });
     return () => dataLaporan();
   }, []);
+
   // state menampilkan modal
   const [modal, setModal] = useState(false);
+
   // pass data
   const [hadir, setHadir] = useState([]);
   const [tidakHadir, setTidakHadir] = useState([]);
@@ -111,6 +118,7 @@ function laporan({visible2, onDismissSnackBar, setVisible2, navigation}) {
     setJumlahTidakHadir(jumlahTidakHadir);
     setButton(false);
   };
+
   // closeModal form hadir tidak
   const closeModal = () => {
     setModal(false);
@@ -181,6 +189,7 @@ function laporan({visible2, onDismissSnackBar, setVisible2, navigation}) {
   };
 
   const [siswa, setSiswa] = useState('');
+
   // goback
   const backGo = () => {
     navigation.goBack();

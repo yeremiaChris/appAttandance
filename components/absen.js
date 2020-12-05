@@ -35,17 +35,13 @@ const data = [
     label: 'Tidak Hadir',
   },
 ];
+
 // label select
 const label = [
   {label: 'Doa Pagi', value: true},
   {label: 'Ibadah Minggu', value: false},
 ];
-const brg = [
-  {id: 0, label: 'Button1'},
-  {id: 1, label: 'Button2'},
-  {id: 2, label: 'Button3'},
-  {id: 3, label: 'Button4'},
-];
+
 function Absen({navigation}) {
   // disabled button
   const [button, setButton] = useState(true);
@@ -80,6 +76,7 @@ function Absen({navigation}) {
 
   // untuk search
   const [filteredDataSource, setFilteredDataSource] = useState([]);
+
   // getData doa pagi
   useEffect(() => {
     const daftarTmp = firestore().collection('daftar');
@@ -170,6 +167,7 @@ function Absen({navigation}) {
   const buatL = () => {
     buatLaporan(tidakHadirSaja, hadirSaja);
   };
+
   const buatM = () => {
     buatLaporanMinggu(tidakHadirSaja, hadirSaja);
   };

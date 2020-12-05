@@ -31,28 +31,14 @@ import {changeCheckAll, deleteSiswa, dataAngkatan} from '../firestore/daftar';
 import SnackBar from '../shared/snackBar';
 import ProgressBar from '../shared/progressBar';
 import Search from '../shared/search';
-const initialSiswa = [
-  {
-    nama: '',
-    angkatan: '',
-    jurusan: '',
-    key: '',
-    check: '',
-  },
-];
-// initialDetail
-const initialDetail = {
-  nama: '',
-  angkatan: '',
-  jurusan: '',
-  key: '',
-};
-// label pada select
+
+// label select
 const label = [
   {label: 'Angkatan 2019', value: '2019'},
   {label: 'Angkatan 2018', value: '2018'},
   {label: 'Angkatan 2017', value: '2017'},
 ];
+
 function list({navigation, selectedLocation}) {
   // disbale button
   const [button, setButton] = useState(true);
@@ -63,7 +49,7 @@ function list({navigation, selectedLocation}) {
   const hideModal = () => setVisible(false);
   const containerStyle = {backgroundColor: 'white', padding: 20};
 
-  const [detail, setDetail] = useState(initialDetail);
+  const [detail, setDetail] = useState([]);
   // akhir ModalDetail
 
   // get key for delete
@@ -132,8 +118,10 @@ function list({navigation, selectedLocation}) {
 
   // get data from firestore
   const [siswa, setSiswa] = useState([]);
+
   // untuk search
   const [filteredDataSource, setFilteredDataSource] = useState([]);
+
   useEffect(() => {
     const getDaftar = firestore()
       .collection('daftar')
@@ -179,12 +167,16 @@ function list({navigation, selectedLocation}) {
         setButton(true);
       });
   });
+
   // snackbar
   const [visible2, setVisible2] = useState(false);
 
   const onToggleSnackBar = () => setVisible2(true);
 
   const onDismissSnackBar = () => setVisible(false);
+  // akhir snacbbar
+
+  // title
   const [title, setTitle] = useState('Doa Pagi');
   const changeTitle = useCallback(
     (newTitle) => {
