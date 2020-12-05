@@ -11,6 +11,8 @@ import {TextInput, Button} from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
+import ModalRegis from './modalRegistrasi';
+import ModalForgot from './modalForgot';
 
 import {AuthContext} from '../authentication/authProvider';
 
@@ -24,7 +26,7 @@ const LoginSchema = Yup.object().shape({
     .required('Password is required')
     .min(6, 'Password must be at least 6 characters'),
 });
-import ModalRegis from './modalRegistrasi';
+
 export default function login({navigation}) {
   // login useContet
   const {login} = useContext(AuthContext);
@@ -85,7 +87,7 @@ export default function login({navigation}) {
                     Login
                   </Button>
                   <TouchableOpacity>
-                    <Text style={styles.lupa}>Forgot Password ?</Text>
+                    <ModalForgot />
                   </TouchableOpacity>
                 </View>
                 <ModalRegis />

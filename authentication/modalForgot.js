@@ -8,6 +8,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import {FAB} from 'react-native-paper';
 import {IconButton, TextInput} from 'react-native-paper';
@@ -22,17 +23,6 @@ const siswaSchema = yup.object({
     .required('Email is Required')
     .email('Invalid email')
     .required('Email is Required'),
-  password: yup
-    .string()
-    .matches(/\w*[a-z]\w*/, 'Password must have a small letter')
-    .matches(/\w*[A-Z]\w*/, 'Password must have a capital letter')
-    .matches(/\d/, 'Password must have a number')
-    .min(6, ({min}) => `Password must be at least ${min} characters`)
-    .required('Password is required'),
-  confirmPassword: yup
-    .string()
-    .oneOf([yup.ref('password')], 'Passwords do not match')
-    .required('Confirm password is required'),
 });
 function modal({setSiswa, onToggleSnackBar, setVisible2, button}) {
   const closeModal = () => {
@@ -43,10 +33,13 @@ function modal({setSiswa, onToggleSnackBar, setVisible2, button}) {
     Keyboard.dismiss();
   };
   // handleSubmit
+
   // authProvider
-  const {register} = useContext(AuthContext);
+  const {resetPassword} = useContext(AuthContext);
   const handleSubmit = (values) => {
-    register(values.email, values.confirmPassword);
+    setModal(false);
+    Alert.alert('Liat email anda');
+    resetPassword(values.email);
   };
 
   // state modal
@@ -69,14 +62,12 @@ function modal({setSiswa, onToggleSnackBar, setVisible2, button}) {
                 onPress={closeModal}
                 disabled={button}
               />
-              <Text style={styles.textHeader}>Daftar </Text>
+              <Text style={styles.textHeader}>Reset Password </Text>
             </View>
             <Formik
               disabled={button}
               initialValues={{
                 email: '',
-                password: '',
-                confirmPassword: '',
               }}
               validationSchema={siswaSchema}
               onSubmit={handleSubmit}>
@@ -100,30 +91,6 @@ function modal({setSiswa, onToggleSnackBar, setVisible2, button}) {
                   <Text style={styles.textError}>
                     {touched.email && errors.email}
                   </Text>
-                  <TextInput
-                    disabled={button}
-                    secureTextEntry={true}
-                    label="Tulis password..."
-                    style={styles.textInput}
-                    onChangeText={handleChange('password')}
-                    value={values.password}
-                    onBlur={handleBlur('password')}
-                  />
-                  <Text style={styles.textError}>
-                    {touched.password && errors.password}
-                  </Text>
-                  <TextInput
-                    disabled={button}
-                    secureTextEntry={true}
-                    label="Tulis confirmPassword..."
-                    style={styles.textInput}
-                    onChangeText={handleChange('confirmPassword')}
-                    value={values.confirmPassword}
-                    onBlur={handleBlur('confirmPassword')}
-                  />
-                  <Text style={styles.textError}>
-                    {touched.confirmPassword && errors.confirmPassword}
-                  </Text>
 
                   <View style={styles.viewButton}>
                     <IconButton
@@ -144,9 +111,8 @@ function modal({setSiswa, onToggleSnackBar, setVisible2, button}) {
         </TouchableWithoutFeedback>
       </Modal>
       <View style={styles.textRegis}>
-        <Text>Tidak Punya Akun ?</Text>
         <TouchableOpacity onPress={handleForm}>
-          <Text style={styles.register}>Register</Text>
+          <Text style={styles.register}>Forgot Password ?</Text>
         </TouchableOpacity>
       </View>
     </View>
