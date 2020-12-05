@@ -5,7 +5,7 @@ import {Modal, StyleSheet, View, Text} from 'react-native';
 import {IconButton} from 'react-native-paper';
 import HadirDanTidak from '../components/hadirDanTidak';
 const Tab = createMaterialTopTabNavigator();
-export default function daftarYangHadirDanTidak({
+function daftarYangHadirDanTidak({
   modal,
   closeModal,
   hadir,
@@ -51,7 +51,7 @@ export default function daftarYangHadirDanTidak({
     </Modal>
   );
 }
-
+export default React.memo(daftarYangHadirDanTidak);
 const styles = StyleSheet.create({
   fab: {
     position: 'absolute',

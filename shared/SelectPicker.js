@@ -1,8 +1,9 @@
 import RNPickerSelect from 'react-native-picker-select';
 import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
+import {log} from 'react-native-reanimated';
 
-export default function SelectPicker({
+function SelectPicker({
   title,
   items,
   setNilai,
@@ -44,6 +45,8 @@ export default function SelectPicker({
     </View>
   );
 }
+
+export default React.memo(SelectPicker);
 
 const styles = StyleSheet.create({
   select: {

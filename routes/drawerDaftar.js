@@ -1,25 +1,61 @@
-import React from 'react';
+import React, {useState, useContext} from 'react';
 const Drawer = createDrawerNavigator();
-import {createDrawerNavigator} from '@react-navigation/drawer';
-import {StyleSheet} from 'react-native';
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItemList,
+  DrawerItem,
+} from '@react-navigation/drawer';
+import {Alert} from 'react-native';
 import bottomBar from './bottomBar';
-export default function drawerDaftar({route}) {
+import auth from '@react-native-firebase/auth';
+import Login from '../authentication/login';
+import {AuthContext} from '../authentication/authProvider';
+
+function drawerDaftar({route, navigation, user}) {
+  const {logout} = useContext(AuthContext);
+  const logoutAccount = () => {
+    Alert.alert('Peringatan', 'Yakin ingin keluar ?', [
+      {
+        text: 'Tidak',
+        style: 'cancel',
+      },
+      {
+        text: 'Ya',
+        onPress: () => {
+          logout();
+        },
+      },
+    ]);
+  };
+  function CustomDrawerContent(props) {
+    return (
+      <DrawerContentScrollView {...props}>
+        <DrawerItemList {...props} />
+        <DrawerItem label="Logout" onPress={() => logoutAccount()} />
+      </DrawerContentScrollView>
+    );
+  }
+
   return (
-    <Drawer.Navigator initialRouteName={route.name}>
-      <Drawer.Screen
-        name="Beranda"
-        component={bottomBar}
-        options={{headerShown: false}}
-      />
-      <Drawer.Screen name="Daftar" component={bottomBar} />
-      <Drawer.Screen name="Absen" component={bottomBar} />
-      <Drawer.Screen name="Laporan" component={bottomBar} />
-    </Drawer.Navigator>
+    <>
+      {!user ? (
+        <Login navigation={navigation} />
+      ) : (
+        <Drawer.Navigator
+          initialRouteName={route.name}
+          drawerContent={(props) => <CustomDrawerContent {...props} />}>
+          <Drawer.Screen
+            name="Beranda"
+            component={bottomBar}
+            options={{headerShown: false}}
+          />
+          <Drawer.Screen name="Daftar" component={bottomBar} />
+          <Drawer.Screen name="Absen" component={bottomBar} />
+          <Drawer.Screen name="Laporan" component={bottomBar} />
+        </Drawer.Navigator>
+      )}
+    </>
   );
 }
-const styles = StyleSheet.create({
-  search: {
-    width: 300,
-    right: 10,
-  },
-});
+export default drawerDaftar;

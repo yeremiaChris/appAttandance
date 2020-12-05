@@ -31,7 +31,6 @@ import {changeCheckAll, deleteSiswa, dataAngkatan} from '../firestore/daftar';
 import SnackBar from '../shared/snackBar';
 import ProgressBar from '../shared/progressBar';
 import Search from '../shared/search';
-import {log} from 'react-native-reanimated';
 const initialSiswa = [
   {
     nama: '',
@@ -54,7 +53,7 @@ const label = [
   {label: 'Angkatan 2018', value: '2018'},
   {label: 'Angkatan 2017', value: '2017'},
 ];
-export default function list({navigation, selectedLocation}) {
+function list({navigation, selectedLocation}) {
   // disbale button
   const [button, setButton] = useState(true);
 
@@ -138,35 +137,35 @@ export default function list({navigation, selectedLocation}) {
   useEffect(() => {
     const getDaftar = firestore()
       .collection('daftar')
-      .orderBy('tanggal', 'desc')
       .onSnapshot(function (snabshot) {
         if (snabshot.empty) {
           setProgress(false);
-        } else {
-          setProgress(false);
-          let list = [];
-          snabshot.forEach((doc) => {
-            const datas = {
-              nama: doc.data().nama,
-              angkatan: doc.data().angkatan,
-              jurusan: doc.data().jurusan,
-              key: doc.id,
-              check: doc.data().check,
-              kehadiran: '',
-            };
-            list.push(datas);
-          });
-          setSiswa(list);
-          setFilteredDataSource(list);
           setButton(false);
+          return;
         }
+        setProgress(false);
+        let list = [];
+        snabshot.forEach((doc) => {
+          const datas = {
+            nama: doc.data().nama,
+            angkatan: doc.data().angkatan,
+            jurusan: doc.data().jurusan,
+            key: doc.id,
+            check: doc.data().check,
+            kehadiran: '',
+          };
+          list.push(datas);
+        });
+        setSiswa(list);
+        setFilteredDataSource(list);
+        setButton(false);
       });
-    return () => {
-      getDaftar();
-    };
+
+    return () => getDaftar();
   }, []);
+
   // change checkbox
-  const changeCheckBox = (doc, check) => {
+  const changeCheckBox = useCallback((doc, check) => {
     firestore()
       .collection('daftar')
       .doc(doc)
@@ -179,18 +178,23 @@ export default function list({navigation, selectedLocation}) {
       .catch((err) => {
         setButton(true);
       });
-  };
-
+  });
   // snackbar
-  const [visible2, setVisible2] = React.useState(false);
+  const [visible2, setVisible2] = useState(false);
 
   const onToggleSnackBar = () => setVisible2(true);
 
   const onDismissSnackBar = () => setVisible(false);
   const [title, setTitle] = useState('Doa Pagi');
-  const changeTitle = (newTitle) => {
-    setTitle(newTitle);
-  };
+  const changeTitle = useCallback(
+    (newTitle) => {
+      setTitle(newTitle);
+    },
+    [title],
+  );
+  //   (newTitle) => {
+  //   setTitle(newTitle);
+  // };
 
   // goback
   const backGo = () => {
@@ -242,7 +246,8 @@ export default function list({navigation, selectedLocation}) {
                 <Checkbox
                   disabled={button}
                   status={all ? 'unchecked' : 'checked'}
-                  onPress={() => {
+                  onPress={(e) => {
+                    e.preventDefault();
                     changeCheckAll(all, setAll);
                   }}
                 />
@@ -264,7 +269,8 @@ export default function list({navigation, selectedLocation}) {
             renderItem={({item}) => (
               <TouchableOpacity
                 disabled={button}
-                onLongPress={() => {
+                onLongPress={(e) => {
+                  e.preventDefault();
                   setDisplay(true);
                 }}>
                 <View style={styles.viewForCard}>
@@ -275,15 +281,17 @@ export default function list({navigation, selectedLocation}) {
                         <Checkbox
                           disabled={button}
                           status={item.check ? 'checked' : 'unchecked'}
-                          onPress={() => {
-                            changeCheckBox(item.key, checked);
+                          onPress={(e) => {
+                            e.preventDefault();
                             setChecked(!checked);
+                            changeCheckBox(item.key, checked);
                           }}
                         />
                       ) : null}
                       <TouchableOpacity
                         disabled={button}
-                        onPress={() => {
+                        onPress={(e) => {
+                          e.preventDefault();
                           setDetail({
                             nama: item.nama,
                             angkatan: item.angkatan,
@@ -292,7 +300,10 @@ export default function list({navigation, selectedLocation}) {
                           });
                           showModal();
                         }}
-                        onLongPress={() => setDisplay(true)}>
+                        onLongPress={(e) => {
+                          e.preventDefault();
+                          setDisplay(true);
+                        }}>
                         <View>
                           <Title>{item.nama}</Title>
                           <Paragraph>
@@ -322,6 +333,9 @@ export default function list({navigation, selectedLocation}) {
     </>
   );
 }
+
+export default React.memo(list);
+
 const styles = StyleSheet.create({
   modal: {
     flexDirection: 'column',

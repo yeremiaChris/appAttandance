@@ -2,7 +2,7 @@ import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Button, Snackbar, IconButton, Colors} from 'react-native-paper';
 
-export default function snackBar({onDismissSnackBar, visible, setVisible2}) {
+function snackBar({onDismissSnackBar, visible, setVisible2}) {
   return (
     <View style={styles.container}>
       <Snackbar
@@ -19,6 +19,8 @@ export default function snackBar({onDismissSnackBar, visible, setVisible2}) {
     </View>
   );
 }
+
+export default React.memo(snackBar);
 const styles = StyleSheet.create({
   container: {
     justifyContent: 'space-between',

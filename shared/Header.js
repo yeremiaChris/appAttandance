@@ -2,7 +2,8 @@ import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {Button} from 'react-native-paper';
 import {IconButton, Colors} from 'react-native-paper';
-export default function Header({navigation, title}) {
+
+function Header({navigation, title}) {
   // menuHandle
   const handleMenu = () => {
     navigation.openDrawer();
@@ -21,7 +22,7 @@ export default function Header({navigation, title}) {
     </View>
   );
 }
-
+export default React.memo(Header);
 const styles = StyleSheet.create({
   header: {
     width: '100%',

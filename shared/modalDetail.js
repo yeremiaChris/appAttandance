@@ -13,7 +13,7 @@ import {
 } from 'react-native-paper';
 import {StyleSheet, View} from 'react-native';
 import Update from '../components/update';
-export default function modalDelete({
+function modalDelete({
   visible,
   hideModal,
   containerStyle,
@@ -48,7 +48,7 @@ export default function modalDelete({
     </Portal>
   );
 }
-
+export default React.memo(modalDelete);
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',

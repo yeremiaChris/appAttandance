@@ -63,9 +63,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function item({props, doaPagi, progress, setProgress}) {
+function item({props, doaPagi, progress, setProgress}) {
   const [button, setButton] = useState(true);
-  console.log(props);
   // data laporan yang hadir
   const [listLaporan, setListLaporan] = useState([]);
   const [minggu, setMinggu] = useState([]);
@@ -113,8 +112,8 @@ export default function item({props, doaPagi, progress, setProgress}) {
         setButton(false);
       });
     return () => {
-      dataLaporan;
-      dataLaporanMinggu;
+      dataLaporan();
+      dataLaporanMinggu();
     };
   }, []);
 
@@ -160,7 +159,6 @@ export default function item({props, doaPagi, progress, setProgress}) {
   const handleLaporan = () => {
     props.navigation.navigate('Laporan');
   };
-
   return (
     <>
       <View style={styles.cardWrapper}>
@@ -299,3 +297,4 @@ export default function item({props, doaPagi, progress, setProgress}) {
     </>
   );
 }
+export default React.memo(item);

@@ -16,7 +16,7 @@ export const buatLaporan = (dataArray, dataArray2) => {
       totalTidakHadir: dataArray.length,
       tanggal: moment(new Date()).format('dddd,D MMM yyyy'),
       jam: moment(new Date()).format('HH:mm'),
-      waktu: new Date(),
+      waktu: firestore.FieldValue.serverTimestamp(),
     })
     .then((res) => console.log(res))
     .catch((err) => console.log(err));
@@ -34,7 +34,7 @@ export const buatLaporanMinggu = (dataArray, dataArray2) => {
       totalTidakHadir: dataArray.length,
       tanggal: moment(new Date()).format('dddd,D MMM yyyy'),
       jam: moment(new Date()).format('HH:mm'),
-      waktu: new Date().toString(),
+      waktu: firestore.FieldValue.serverTimestamp(),
     })
     .then((res) => console.log(res))
     .catch((err) => console.log(err));
@@ -74,7 +74,7 @@ export const tambahSiswa = (nama, angkatan, jurusan, set) => {
       check: false,
       hadir: true,
       tidakHadir: false,
-      tanggal: new Date().toString(),
+      tanggal: firestore.FieldValue.serverTimestamp(),
     })
     .then((res) => {
       setInterval(() => {
@@ -129,7 +129,7 @@ export const updateDetail = (doc, angkatan, nama, jurusan) => {
     angkatan,
     nama,
     jurusan,
-    tanggal: new Date().toString(),
+    tanggal: firestore.FieldValue.serverTimestamp(),
   });
 };
 

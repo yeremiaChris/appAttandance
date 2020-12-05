@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import {
   Button,
   Modal,
@@ -7,67 +7,56 @@ import {
   Text,
   TouchableWithoutFeedback,
   Keyboard,
+  TouchableOpacity,
 } from 'react-native';
 import {FAB} from 'react-native-paper';
 import {IconButton, TextInput} from 'react-native-paper';
 import {Formik} from 'formik';
-import RNPickerSelect from 'react-native-picker-select';
 import * as yup from 'yup';
+import auth from '@react-native-firebase/auth';
+import {AuthContext} from './authProvider';
 // tambah siswa
-import {tambahSiswa} from '../firestore/daftar';
-// angkatan select
-const label = [
-  {label: 'Angkatan 2019', value: '2019'},
-  {label: 'Angkatan 2018', value: '2018'},
-  {label: 'Angkatan 2017', value: '2017'},
-];
-// jurusan select
-const jurusans = [
-  {label: 'Sistem Informasi', value: 'Sistem Informasi'},
-  {label: 'Teknik Informatika', value: 'Teknik Informatika'},
-  {label: 'Manajemen', value: 'Manajemen'},
-  {label: 'Sastra Ingris', value: 'Sastra Inggris'},
-  {label: 'Perpajakan', value: 'Perpajakan'},
-];
-// schema
 const siswaSchema = yup.object({
-  nama: yup
+  email: yup
     .string()
-    .required('Field ini tidak boleh kosong ...')
-    .min(4, 'Tidak boleh kurang dari 4 huruf ...'),
-  angkatan: yup.string().required('Field ini tidak boleh kosong ...'),
-  jurusan: yup.string().required('Field ini tidak boleh kosong ...'),
+    .required('Email is Required')
+    .email('Invalid email')
+    .required('Email is Required'),
+  password: yup
+    .string()
+    .matches(/\w*[a-z]\w*/, 'Password must have a small letter')
+    .matches(/\w*[A-Z]\w*/, 'Password must have a capital letter')
+    .matches(/\d/, 'Password must have a number')
+    .min(6, ({min}) => `Password must be at least ${min} characters`)
+    .required('Password is required'),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref('password')], 'Passwords do not match')
+    .required('Confirm password is required'),
 });
 function modal({setSiswa, onToggleSnackBar, setVisible2, button}) {
   const closeModal = () => {
     setModal(false);
   };
-  // items angkatan
-  const [items, setItems] = useState(label);
-  // items jurusan
-  const [jurusan, setJurusan] = useState(jurusans);
   // dismis keyboard
   const dismisKeyboard = () => {
     Keyboard.dismiss();
   };
   // handleSubmit
   const handleSubmit = (values) => {
-    // values.key = Math.random().toString();
-    tambahSiswa(values.nama, values.angkatan, values.jurusan, setVisible2);
-    onToggleSnackBar();
-    // setSiswa((prevState) => {
-    //   return [values, ...prevState];
-    // });
-    setModal(false);
+    register(values.email, values.confirmPassword);
   };
 
   // state modal
   const [modal, setModal] = useState(false);
+
   // handle button tambah
   const handleForm = () => {
     setModal(true);
   };
-  // close mod
+
+  // authProvider
+  const {register} = useContext(AuthContext);
   return (
     <View style={styles.container}>
       <Modal animationType="slide" visible={modal}>
@@ -80,11 +69,15 @@ function modal({setSiswa, onToggleSnackBar, setVisible2, button}) {
                 onPress={closeModal}
                 disabled={button}
               />
-              <Text style={styles.textHeader}>Tambah Siswa</Text>
+              <Text style={styles.textHeader}>Daftar </Text>
             </View>
             <Formik
               disabled={button}
-              initialValues={{nama: '', angkatan: '', jurusan: ''}}
+              initialValues={{
+                email: '',
+                password: '',
+                confirmPassword: '',
+              }}
               validationSchema={siswaSchema}
               onSubmit={handleSubmit}>
               {({
@@ -98,39 +91,40 @@ function modal({setSiswa, onToggleSnackBar, setVisible2, button}) {
                 <View style={styles.inputWrapper}>
                   <TextInput
                     disabled={button}
-                    label="Tulis nama..."
+                    label="Tulis email..."
                     style={styles.textInput}
-                    onChangeText={handleChange('nama')}
-                    value={values.nama}
-                    onBlur={handleBlur('nama')}
+                    onChangeText={handleChange('email')}
+                    value={values.email}
+                    onBlur={handleBlur('email')}
                   />
                   <Text style={styles.textError}>
-                    {touched.nama && errors.nama}
+                    {touched.email && errors.email}
                   </Text>
-                  <RNPickerSelect
+                  <TextInput
                     disabled={button}
-                    style={styles}
-                    placeholder={{label: 'Pilih Angkatan...', value: null}}
-                    onValueChange={handleChange('angkatan')}
-                    items={items}
-                    style={pickerSelectStyles}
-                    value={values.angkatan}
+                    secureTextEntry={true}
+                    label="Tulis password..."
+                    style={styles.textInput}
+                    onChangeText={handleChange('password')}
+                    value={values.password}
+                    onBlur={handleBlur('password')}
                   />
                   <Text style={styles.textError}>
-                    {touched.angkatan && errors.angkatan}
+                    {touched.password && errors.password}
                   </Text>
-                  <RNPickerSelect
+                  <TextInput
                     disabled={button}
-                    style={styles}
-                    placeholder={{label: 'Pilih Jurusan...', value: null}}
-                    onValueChange={handleChange('jurusan')}
-                    items={jurusans}
-                    value={values.jurusan}
-                    style={pickerSelectStyles}
+                    secureTextEntry={true}
+                    label="Tulis confirmPassword..."
+                    style={styles.textInput}
+                    onChangeText={handleChange('confirmPassword')}
+                    value={values.confirmPassword}
+                    onBlur={handleBlur('confirmPassword')}
                   />
                   <Text style={styles.textError}>
-                    {touched.jurusan && errors.jurusan}
+                    {touched.confirmPassword && errors.confirmPassword}
                   </Text>
+
                   <View style={styles.viewButton}>
                     <IconButton
                       disabled={button}
@@ -149,27 +143,26 @@ function modal({setSiswa, onToggleSnackBar, setVisible2, button}) {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-      <FAB
-        disabled={button}
-        style={styles.fab}
-        medium
-        icon="plus"
-        onPress={handleForm}
-      />
+      <View style={styles.textRegis}>
+        <Text>Tidak Punya Akun ?</Text>
+        <TouchableOpacity onPress={handleForm}>
+          <Text style={styles.register}>Register</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
 export default React.memo(modal);
 
 const styles = StyleSheet.create({
-  fab: {
-    position: 'absolute',
-    margin: 16,
-    right: 0,
-    bottom: 0,
+  textRegis: {
+    flexDirection: 'row',
   },
   container: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   textInput: {
     marginBottom: 10,
@@ -192,6 +185,10 @@ const styles = StyleSheet.create({
   textError: {
     marginBottom: 10,
     color: 'red',
+  },
+  register: {
+    color: 'purple',
+    marginLeft: 10,
   },
 });
 const pickerSelectStyles = StyleSheet.create({

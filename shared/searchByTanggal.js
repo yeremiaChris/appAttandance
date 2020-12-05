@@ -4,7 +4,7 @@ import {IconButton, Colors} from 'react-native-paper';
 import SearchBar from 'react-native-dynamic-search-bar';
 import {log} from 'react-native-reanimated';
 
-export default function search({
+function searchByTanggal({
   handleMenu,
   handle,
   data,
@@ -59,6 +59,8 @@ export default function search({
     </View>
   );
 }
+export default React.memo(searchByTanggal);
+
 const styles = StyleSheet.create({
   search: {
     right: 10,

@@ -18,53 +18,13 @@ import DaftarHadirDanTidak from '../routes/daftarYangHadirDanTidak';
 import SnackBar from '../shared/snackBar';
 import ProgressBar from '../shared/progressBar';
 import SearchByTanggal from '../shared/searchByTanggal';
-import {log} from 'react-native-reanimated';
 
 // label select
 const label = [
   {label: 'Doa Pagi', value: true},
   {label: 'Ibadah Minggu', value: false},
 ];
-// inital doa pagi
-const DoaPagi = [
-  {
-    title: 'Doa Pagi',
-    tanggal: 'Senin 20 Des 2021',
-    hadir: '20',
-    tidakHadir: '10',
-    key: '3',
-  },
-  {
-    title: 'Doa Pagi',
-    tanggal: 'Senin 2 Des 2021',
-    hadir: '20',
-    tidakHadir: '10',
-    key: '4',
-  },
-];
-// initial ibadah minggu
-const IbadahMinggu = [
-  {
-    title: 'Ibadah Minggu',
-    tanggal: 'Minggu 20 Des 2021',
-    hadir: '20',
-    tidakHadir: '10',
-    key: '1',
-  },
-  {
-    title: 'Ibadah Minggu',
-    tanggal: 'Minggu 2 Des 2021',
-    hadir: '20',
-    tidakHadir: '10',
-    key: '2',
-  },
-];
-export default function laporan({
-  visible2,
-  onDismissSnackBar,
-  setVisible2,
-  navigation,
-}) {
+function laporan({visible2, onDismissSnackBar, setVisible2, navigation}) {
   // disabled button
   const [button, setButton] = useState(true);
 
@@ -73,9 +33,6 @@ export default function laporan({
   const [nilai, setNilai] = useState({
     tangkapValue: null,
   });
-
-  // mengelola state pilih
-  const [pilih, setPilih] = useState(DoaPagi);
   const handlePilihMinggu = () => {
     setPilih(IbadahMinggu);
   };
@@ -103,16 +60,16 @@ export default function laporan({
   // untuk search
   const [filteredDataSource, setFilteredDataSource] = useState([]);
   useEffect(() => {
-    if (dataLapors == true) {
-      setDataLaporFix('laporanIbadahMinggu');
-    } else if (dataLapors == false || null) {
-      setDataLaporFix('laporanDoaPagi');
-    }
     const dataLaporan = firestore()
-      .collection(dataLaporFix)
+      .collection('laporanDoaPagi')
       .orderBy('tanggal', 'asc')
       .onSnapshot(function (snabshot) {
         let list = [];
+        if (snabshot.empty) {
+          setProgress(false);
+          setButton(false);
+          return;
+        }
         snabshot.forEach((doc) => {
           const datas = {
             hadir: doc.data().totalHadir,
@@ -130,12 +87,10 @@ export default function laporan({
         setProgress(false);
         setButton(false);
       });
-    return () => dataLaporan;
-  }, [dataLapors]);
-
+    return () => dataLaporan();
+  }, []);
   // state menampilkan modal
   const [modal, setModal] = useState(false);
-
   // pass data
   const [hadir, setHadir] = useState([]);
   const [tidakHadir, setTidakHadir] = useState([]);
@@ -156,7 +111,6 @@ export default function laporan({
     setJumlahTidakHadir(jumlahTidakHadir);
     setButton(false);
   };
-
   // closeModal form hadir tidak
   const closeModal = () => {
     setModal(false);
@@ -164,8 +118,66 @@ export default function laporan({
     setTidakHadir();
     setButton(false);
   };
+
+  // select picker pilihan`
   const laporSet = (test, tests, val) => {
-    setDataLapor(val);
+    if (val == true || val == null) {
+      const dataLaporan = firestore()
+        .collection('laporanDoaPagi')
+        .orderBy('tanggal', 'asc')
+        .onSnapshot(function (snabshot) {
+          let list = [];
+          if (snabshot.empty) {
+            setProgress(false);
+            setButton(false);
+            return;
+          }
+          snabshot.forEach((doc) => {
+            const datas = {
+              hadir: doc.data().totalHadir,
+              tidakHadir: doc.data().totalTidakHadir,
+              tanggal: doc.data().tanggal,
+              jam: doc.data().jam,
+              key: doc.id,
+              dataHadir: doc.data().dataHadir,
+              dataTidakHadir: doc.data().dataTidakHadir,
+            };
+            list.push(datas);
+          });
+          setListLaporan(list);
+          setFilteredDataSource(list);
+          setProgress(false);
+          setButton(false);
+        });
+    } else {
+      const dataLaporan = firestore()
+        .collection('laporanIbadahMinggu')
+        .orderBy('tanggal', 'asc')
+        .onSnapshot(function (snabshot) {
+          let list = [];
+          if (snabshot.empty) {
+            setProgress(false);
+            setButton(false);
+            return;
+          }
+          snabshot.forEach((doc) => {
+            const datas = {
+              hadir: doc.data().totalHadir,
+              tidakHadir: doc.data().totalTidakHadir,
+              tanggal: doc.data().tanggal,
+              jam: doc.data().jam,
+              key: doc.id,
+              dataHadir: doc.data().dataHadir,
+              dataTidakHadir: doc.data().dataTidakHadir,
+            };
+            list.push(datas);
+          });
+          setListLaporan(list);
+          setFilteredDataSource(list);
+          setProgress(false);
+          setButton(false);
+        });
+    }
   };
 
   const [siswa, setSiswa] = useState('');
@@ -174,7 +186,7 @@ export default function laporan({
     navigation.goBack();
     setButton(false);
   };
-  console.log(filteredDataSource);
+
   return (
     <>
       <View style={styles.searchWrap}>
@@ -277,6 +289,7 @@ export default function laporan({
     </>
   );
 }
+export default React.memo(laporan);
 
 const styles = StyleSheet.create({
   viewForCard: {

@@ -46,7 +46,7 @@ const brg = [
   {id: 2, label: 'Button3'},
   {id: 3, label: 'Button4'},
 ];
-export default function Absen({navigation}) {
+function Absen({navigation}) {
   // disabled button
   const [button, setButton] = useState(true);
 
@@ -99,6 +99,8 @@ export default function Absen({navigation}) {
             };
             list.push(datas);
           } else {
+            setProgress(false);
+            setButton(false);
             return;
           }
         });
@@ -107,7 +109,7 @@ export default function Absen({navigation}) {
         setProgress(false);
         setButton(false);
       });
-    return data;
+    return () => data();
   }, []);
 
   // getData doa pagi
@@ -117,6 +119,11 @@ export default function Absen({navigation}) {
       .where('kehadiran', '==', 'Tidak Hadir')
       .onSnapshot((snabshot) => {
         let list = [];
+        if (snabshot.empty) {
+          setProgress(false);
+          setButton(false);
+          return;
+        }
         snabshot.forEach((doc) => {
           const data = {
             nama: doc.data().nama,
@@ -129,8 +136,8 @@ export default function Absen({navigation}) {
         setTidakHadirSaja(list);
         setButton(false);
       });
-    return data;
-  }, []);
+    return () => data();
+  }, [doaPagi]);
 
   useEffect(() => {
     const daftarTmp = firestore().collection('daftar');
@@ -138,6 +145,11 @@ export default function Absen({navigation}) {
       .where('kehadiran', '==', 'Hadir')
       .onSnapshot((snabshot) => {
         let list = [];
+        if (snabshot.empty) {
+          setProgress(false);
+          setButton(false);
+          return;
+        }
         snabshot.forEach((doc) => {
           const data = {
             nama: doc.data().nama,
@@ -150,8 +162,8 @@ export default function Absen({navigation}) {
         setHadirSaja(list);
         setButton(false);
       });
-    return data;
-  }, []);
+    return () => data();
+  }, [doaPagi]);
 
   // buat laporan yang hadir saja dan tidak hadir
   const [buat, setBuat] = useState(true);
@@ -342,7 +354,7 @@ export default function Absen({navigation}) {
     </>
   );
 }
-
+export default React.memo(Absen);
 const styles = StyleSheet.create({
   container: {
     marginBottom: 10,

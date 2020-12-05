@@ -4,10 +4,11 @@ import {BottomNavigation, Text} from 'react-native-paper';
 import Item from './item';
 import firestore from '@react-native-firebase/firestore';
 import ProgressBar from '../shared/progressBar';
-export default function home(props) {
+function home(props) {
   return (
     <>
       <Card props={props} />
     </>
   );
 }
+export default React.memo(home);

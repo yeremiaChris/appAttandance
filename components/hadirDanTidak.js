@@ -19,7 +19,7 @@ import {
   Alert,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-export default function HadirDanTidak({kehadiran, jumlah, button}) {
+function HadirDanTidak({kehadiran, jumlah, button}) {
   // modalDetail
   const [visible, setVisible] = useState(false);
   const showModal = () => setVisible(true);
@@ -62,6 +62,8 @@ export default function HadirDanTidak({kehadiran, jumlah, button}) {
     </View>
   );
 }
+export default React.memo(HadirDanTidak);
+
 const styles = StyleSheet.create({
   modal: {
     flexDirection: 'column',

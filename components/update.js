@@ -37,7 +37,7 @@ const siswaSchema = yup.object({
   angkatan: yup.string().required('Field ini tidak boleh kosong ...'),
   jurusan: yup.string().required('Field ini tidak boleh kosong ...'),
 });
-export default function modal({nama, ang, jur, kunci, setVisible, button}) {
+function modal({nama, ang, jur, kunci, setVisible, button}) {
   // state modal
   const [modal, setModal] = useState(false);
   // handle button tambah
@@ -161,6 +161,9 @@ export default function modal({nama, ang, jur, kunci, setVisible, button}) {
     </View>
   );
 }
+
+export default React.memo(modal);
+
 const styles = StyleSheet.create({
   fab: {
     position: 'absolute',

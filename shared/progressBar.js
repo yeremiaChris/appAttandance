@@ -1,6 +1,6 @@
 import React from 'react';
 import {ProgressBar, Colors} from 'react-native-paper';
-export default function progressBar({progress, durasi}) {
+function progressBar({progress, durasi}) {
   return (
     <ProgressBar
       progress={durasi}
@@ -9,3 +9,4 @@ export default function progressBar({progress, durasi}) {
     />
   );
 }
+export default React.memo(progressBar);
