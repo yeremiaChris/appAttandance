@@ -49,7 +49,7 @@ function searchByTanggal({
       <SearchBar
         disabled={button}
         style={styles.search}
-        placeholder="Cari Siswa..."
+        placeholder="Cari Tanggal..."
         value={search}
         onChangeText={(text) => {
           searchFilterFunction(text);

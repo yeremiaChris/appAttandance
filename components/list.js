@@ -125,6 +125,8 @@ function list({navigation, selectedLocation}) {
   useEffect(() => {
     const getDaftar = firestore()
       .collection('daftar')
+      .orderBy('tanggal', 'desc')
+      .where('tanggal', '>', new Date(1529802276644))
       .onSnapshot(function (snabshot) {
         if (snabshot.empty) {
           setProgress(false);

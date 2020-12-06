@@ -8,7 +8,7 @@ import {
   Text,
 } from 'react-native-paper';
 import {StyleSheet, View, TouchableOpacity, FlatList} from 'react-native';
-import SelectPicker from '../shared/SelectPicker';
+import SelectLaporan from '../shared/selectLaporan';
 // firestore
 import firestore from '@react-native-firebase/firestore';
 
@@ -18,11 +18,11 @@ import DaftarHadirDanTidak from '../routes/daftarYangHadirDanTidak';
 import SnackBar from '../shared/snackBar';
 import ProgressBar from '../shared/progressBar';
 import SearchByTanggal from '../shared/searchByTanggal';
-
+import {urutLaporan} from '../firestore/daftar';
 // label select
 const label = [
-  {label: 'Doa Pagi', value: true},
-  {label: 'Ibadah Minggu', value: false},
+  {label: 'Doa Pagi', value: 'laporanDoaPagi'},
+  {label: 'Ibadah Minggu', value: 'laporanIbadahMinggu'},
 ];
 
 function laporan({visible2, onDismissSnackBar, setVisible2, navigation}) {
@@ -62,12 +62,12 @@ function laporan({visible2, onDismissSnackBar, setVisible2, navigation}) {
 
   // untuk search
   const [filteredDataSource, setFilteredDataSource] = useState([]);
-
   // manggil laporan
   useEffect(() => {
     const dataLaporan = firestore()
       .collection('laporanDoaPagi')
-      .orderBy('tanggal', 'asc')
+      .orderBy('waktu', 'desc')
+      .where('waktu', '>', new Date(1529802276644))
       .onSnapshot(function (snabshot) {
         let list = [];
         if (snabshot.empty) {
@@ -128,65 +128,6 @@ function laporan({visible2, onDismissSnackBar, setVisible2, navigation}) {
   };
 
   // select picker pilihan`
-  const laporSet = (test, tests, val) => {
-    if (val == true || val == null) {
-      const dataLaporan = firestore()
-        .collection('laporanDoaPagi')
-        .orderBy('tanggal', 'asc')
-        .onSnapshot(function (snabshot) {
-          let list = [];
-          if (snabshot.empty) {
-            setProgress(false);
-            setButton(false);
-            return;
-          }
-          snabshot.forEach((doc) => {
-            const datas = {
-              hadir: doc.data().totalHadir,
-              tidakHadir: doc.data().totalTidakHadir,
-              tanggal: doc.data().tanggal,
-              jam: doc.data().jam,
-              key: doc.id,
-              dataHadir: doc.data().dataHadir,
-              dataTidakHadir: doc.data().dataTidakHadir,
-            };
-            list.push(datas);
-          });
-          setListLaporan(list);
-          setFilteredDataSource(list);
-          setProgress(false);
-          setButton(false);
-        });
-    } else {
-      const dataLaporan = firestore()
-        .collection('laporanIbadahMinggu')
-        .orderBy('tanggal', 'asc')
-        .onSnapshot(function (snabshot) {
-          let list = [];
-          if (snabshot.empty) {
-            setProgress(false);
-            setButton(false);
-            return;
-          }
-          snabshot.forEach((doc) => {
-            const datas = {
-              hadir: doc.data().totalHadir,
-              tidakHadir: doc.data().totalTidakHadir,
-              tanggal: doc.data().tanggal,
-              jam: doc.data().jam,
-              key: doc.id,
-              dataHadir: doc.data().dataHadir,
-              dataTidakHadir: doc.data().dataTidakHadir,
-            };
-            list.push(datas);
-          });
-          setListLaporan(list);
-          setFilteredDataSource(list);
-          setProgress(false);
-          setButton(false);
-        });
-    }
-  };
 
   const [siswa, setSiswa] = useState('');
 
@@ -219,7 +160,7 @@ function laporan({visible2, onDismissSnackBar, setVisible2, navigation}) {
         />
         <ProgressBar progress={progress} durasi={durasi} />
 
-        <SelectPicker
+        <SelectLaporan
           button={button}
           title="Pilih laporan"
           items={items}
@@ -229,9 +170,11 @@ function laporan({visible2, onDismissSnackBar, setVisible2, navigation}) {
           handlePilih={handlePilihMinggu}
           handlePilihPagi={handlePilihPagi}
           valueLabel="DoaPagi"
-          data={laporSet}
-          setSiswa={setSiswa}
+          setListLaporan={setListLaporan}
+          setFilteredDataSource={setFilteredDataSource}
           setProgress={setProgress}
+          setButton={setButton}
+          urutLaporan={urutLaporan}
         />
         <SnackBar
           onDismissSnackBar={onDismissSnackBar}

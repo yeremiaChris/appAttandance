@@ -33,7 +33,9 @@ export default function login({navigation}) {
 
   const handleSubmit = (values) => {
     login(values.email, values.password);
+    navigation.navigate('Home');
   };
+
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Login </Text>
@@ -46,6 +48,7 @@ export default function login({navigation}) {
           handleChange,
           handleBlur,
           handleSubmit,
+
           errors,
           touched,
         }) => (

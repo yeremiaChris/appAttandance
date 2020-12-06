@@ -155,3 +155,39 @@ export const dataAngkatan = (setSiswa, setProgress, angkatan) => {
       setProgress(false);
     });
 };
+
+// laporan
+export const urutLaporan = (
+  setListLaporan,
+  setFilteredDataSource,
+  setProgress,
+  laporan,
+) => {
+  firestore()
+    .collection(laporan)
+    .orderBy('waktu', 'desc')
+    .where('waktu', '>', new Date(1529802276644))
+    .onSnapshot(function (snabshot) {
+      let list = [];
+      if (snabshot.empty) {
+        setProgress(false);
+        setButton(false);
+        return;
+      }
+      snabshot.forEach((doc) => {
+        const datas = {
+          hadir: doc.data().totalHadir,
+          tidakHadir: doc.data().totalTidakHadir,
+          tanggal: doc.data().tanggal,
+          jam: doc.data().jam,
+          key: doc.id,
+          dataHadir: doc.data().dataHadir,
+          dataTidakHadir: doc.data().dataTidakHadir,
+        };
+        list.push(datas);
+      });
+      setListLaporan(list);
+      setFilteredDataSource(list);
+      setProgress(false);
+    });
+};

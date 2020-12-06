@@ -81,7 +81,8 @@ function Absen({navigation}) {
   useEffect(() => {
     const daftarTmp = firestore().collection('daftar');
     const data = daftarTmp
-      .orderBy('tanggal', 'asc')
+      .orderBy('tanggal', 'desc')
+      .where('tanggal', '>', new Date(1529802276644))
       .onSnapshot(function (snabshot) {
         let list = [];
         snabshot.forEach((doc) => {
